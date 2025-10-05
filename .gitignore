@@ -10,10 +10,10 @@ db.sqlite3
 __pycache__/
 *.pyc
 
-# Archivos de configuración de IDEs (como VS Code)
+# Archivos de configuración de IDEs
 .vscode/
 .vs/
 
-# Archivos de secretos (si los tuvieras por separado)
+# Archivos de secretos
 *.env
 .env
