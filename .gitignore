@@ -12,6 +12,7 @@ __pycache__/
 
 # Archivos de configuración de IDEs (como VS Code)
 .vscode/
+.vs/
 
 # Archivos de secretos (si los tuvieras por separado)
 *.env
