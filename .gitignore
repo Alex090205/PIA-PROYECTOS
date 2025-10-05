@@ -16,3 +16,6 @@ __pycache__/
 # Archivos de secretos (si los tuvieras por separado)
 *.env
 .env
+
+# Carpetas de Visual Studio
+.vs/
