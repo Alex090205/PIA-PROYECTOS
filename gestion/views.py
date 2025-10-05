@@ -1,11 +1,10 @@
-# gestion/views.py - VERSIÓN CORREGIDA
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse # ¡No olvides importar HttpResponse!
+from django.http import HttpResponse 
 
-def login(request):
+def login_view(request):
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -20,6 +19,7 @@ def login(request):
 
 @login_required
 def home(request):
-    # ESTA ES LA FUNCIÓN CORREGIDA
-    # Ahora solo devuelve un mensaje simple y no busca ninguna plantilla.
-    return HttpResponse(f"<h1>¡Login Exitoso!</h1><p>Bienvenido, {request.user.username}.</p>")
+    if request.user.is_staff:
+        return render(request, 'gestion/admin_home.html')
+    else:
+        return render(request, 'gestion/empleado_home.html')
