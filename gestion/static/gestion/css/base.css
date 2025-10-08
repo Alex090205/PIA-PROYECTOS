@@ -1,28 +1,62 @@
+/* === 🎨 PALETA DE COLORES PASTEL PROFESIONAL === */
+:root {
+    --color-primary: #7FB3D5;    /* Azul pastel */
+    --color-secondary: #A3C9A8;  /* Verde menta */
+    --color-accent: #F8C8DC;     /* Rosa suave */
+    --color-bg: #F9FAFB;         /* Fondo general */
+    --color-text: #2C3E50;       /* Texto principal */
+    --color-muted: #6C757D;      /* Texto gris suave */
+    --color-white: #FFFFFF;
+    --color-danger: #e63946;     /* Rojo pastel */
+}
+
+/* === ESTRUCTURA GENERAL === */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     margin: 0;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
+/* === HEADER === */
 header {
-    background-color: #fff;
+    background-color: var(--color-white);
     padding: 1em 2em;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 3px solid var(--color-primary);
 }
 
 header .logo {
     font-weight: bold;
-    font-size: 1.5em;
-    color: #007bff;
+    font-size: 1.6em;
+    color: var(--color-primary);
+    text-transform: uppercase;
 }
 
+/* === BOTÓN DE CERRAR SESIÓN === */
+.logout-btn {
+    background: var(--color-danger);
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: background 0.25s, transform 0.2s;
+}
+.logout-btn:hover {
+    background: #d62828;
+    transform: translateY(-1px);
+}
+
+/* === CONTENEDOR PRINCIPAL === */
 main {
     flex-grow: 1;
     padding: 2em;
@@ -31,15 +65,247 @@ main {
 .container {
     max-width: 1100px;
     margin: auto;
-    background-color: #fff;
+    background-color: var(--color-white);
     padding: 2em;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
+/* === DASHBOARD ADMIN === */
+.dashboard-container {
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.dashboard-title {
+    color: var(--color-text);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+    color: var(--color-muted);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    color: var(--color-text);
+    font-size: 1.3rem;
+    margin-top: 2rem;
+}
+
+.divider {
+    border: none;
+    height: 2px;
+    background-color: #e2e8f0;
+    margin: 1.5rem auto;
+    width: 80%;
+}
+
+/* === CENTRADO DEL DASHBOARD ADMIN === */
+
+/* Centrar vertical y horizontalmente en pantalla */
+main.main-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+}
+
+/* Contenedor general del panel */
+.dashboard-container.centered {
+    text-align: center;
+    max-width: 1000px;
+    background-color: var(--color-white);
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    padding: 2rem 3rem;
+}
+
+/* Título y subtítulo */
+.dashboard-container h1 {
+    color: var(--color-text);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-container p {
+    color: var(--color-muted);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Título de secciones */
+.section-title {
+    color: var(--color-text);
+    font-size: 1.3rem;
+    margin: 1.5rem 0;
+}
+
+/* Grid de tarjetas (ajustable y centrado) */
+.dashboard-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+/* Tarjetas del panel */
+.admin-card {
+    background-color: var(--color-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    text-align: center;
+    width: 270px;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.admin-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Iconos dentro de las tarjetas */
+.admin-card .card-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+}
+
+
+/* === BOTONES === */
+.btn {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.btn-primary { background: var(--color-primary); }
+.btn-primary:hover { background: #5a9dc7; }
+
+.btn-success { background: var(--color-secondary); }
+.btn-success:hover { background: #7fb88d; }
+
+.btn-info { background: #7ab9d6; }
+.btn-info:hover { background: #5ea5c3; }
+
+/* === PIE DE PÁGINA === */
 footer {
     text-align: center;
     padding: 1em;
     font-size: 0.9em;
-    color: #888;
+    color: var(--color-muted);
+    background-color: var(--color-white);
+    border-top: 2px solid var(--color-primary);
+}
+
+/* === FORMULARIO CENTRADO Y PROFESIONAL === */
+
+main.main-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 400px;
+    background: var(--color-white);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-wrapper:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.form-wrapper h1 {
+    color: #2C3E50;
+    margin-bottom: 10px;
+}
+
+.form-wrapper p {
+    color: #6C757D;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+/* Campos del formulario */
+.form-simple p {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.form-simple label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+    color: #2C3E50;
+}
+
+.form-simple input,
+.form-simple select,
+.form-simple textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #dcdfe3;
+    border-radius: 8px;
+    background: #fafafa;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+}
+
+.form-simple input:focus,
+.form-simple select:focus,
+.form-simple textarea:focus {
+    border-color: var(--color-primary);
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(127, 179, 213, 0.25);
+}
+
+/* Botón principal */
+.btn-enviar {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.25s;
+    margin-top: 10px;
+}
+
+.btn-enviar:hover {
+    background-color: #0056b3;
+}
+
+/* Enlace de regreso */
+.volver-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.volver-link:hover {
+    text-decoration: underline;
 }

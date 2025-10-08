@@ -1,0 +1,19 @@
+{% extends "gestion/base.html" %}
+
+{% block title %}Nuevo Proyecto{% endblock %}
+{% block main_class %}main-center{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <h1>Crear nuevo proyecto</h1>
+    <p>Completa los campos para registrar un nuevo proyecto.</p>
+
+    <form method="post" class="form-simple">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-enviar">Guardar proyecto</button>
+    </form>
+
+    <a href="{% url 'lista_proyectos' %}" class="volver-link">← Volver a la lista</a>
+</div>
+{% endblock %}

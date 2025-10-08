@@ -1,9 +1,44 @@
 {% extends "gestion/base.html" %}
+{% load static %}
 
-{% block title %}Interfaz Administrador{% endblock %}
+{% block title %}Panel del Administrador{% endblock %}
+{% block main_class %}main-center{% endblock %}
 
 {% block content %}
-    <h1>Interfaz de Administrador</h1>
-    <p>Bienvenido, <strong>{{ user.username }}</strong>. Esta es la vista para los administradores del sistema.</p>
-    <hr>
+<div class="dashboard-container centered">
+    <h1 class="dashboard-title">Panel del Administrador</h1>
+    <p class="dashboard-subtitle">
+        Bienvenido, <strong>{{ user.username }}</strong>. Desde aquí puedes gestionar los proyectos y revisar las horas trabajadas del personal.
+    </p>
+
+    <hr class="divider">
+
+    <h2 class="section-title">Opciones de administración</h2>
+
+    <div class="dashboard-grid">
+        <!-- Ver proyectos -->
+        <div class="admin-card">
+            <img src="{% static 'gestion/img/icons/proyecto.svg' %}" alt="Proyectos" class="card-icon">
+            <h3>Ver proyectos</h3>
+            <p>Consulta todos los proyectos existentes y sus detalles.</p>
+            <a href="{% url 'lista_proyectos' %}" class="btn btn-primary">Ver lista</a>
+        </div>
+
+        <!-- Crear nuevo proyecto -->
+        <div class="admin-card">
+            <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
+            <h3>Crear proyecto</h3>
+            <p>Agrega nuevos proyectos al sistema y asígnalos a clientes y responsables.</p>
+            <a href="{% url 'nuevo_proyecto' %}" class="btn btn-success">Crear nuevo</a>
+        </div>
+
+        <!-- Ver registros de horas -->
+        <div class="admin-card">
+            <img src="{% static 'gestion/img/icons/hora.svg' %}" alt="Registros de horas" class="card-icon">
+            <h3>Registros de horas</h3>
+            <p>Revisa las horas registradas por los empleados en cada proyecto.</p>
+            <a href="{% url 'ver_registros_horas_admin' %}" class="btn btn-info">Ver registros</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,19 +1,98 @@
+# =========================================
+# 🐍 DJANGO / PYTHON
+# =========================================
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.pot
+*.mo
 
-# Entorno Virtual
-venv/
-
-# Base de datos local de SQLite
+# =========================================
+# 🗄️ BASE DE DATOS LOCAL
+# =========================================
 db.sqlite3
 *.sqlite3
 
-# Archivos temporales de Python
-__pycache__/
-*.pyc
+# =========================================
+# 🧠 ENTORNOS VIRTUALES
+# =========================================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-# Archivos de configuración de IDEs
+# =========================================
+# 🔒 ARCHIVOS DE CONFIGURACIÓN / SECRETS
+# =========================================
+.env
+*.env
+.env.local
+.env.development
+.env.production
+
+# =========================================
+# 🧩 MIGRACIONES (solo mantiene __init__.py)
+# =========================================
+*/migrations/__pycache__/
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# =========================================
+# 💻 CONFIGURACIÓN DE IDEs
+# =========================================
 .vscode/
 .vs/
+.idea/
+*.sublime-project
+*.sublime-workspace
 
-# Archivos de secretos
-*.env
-.env
+# =========================================
+# 📦 ARCHIVOS DE COMPILACIÓN / CACHE
+# =========================================
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# =========================================
+# 📂 ARCHIVOS TEMPORALES Y DE SISTEMA
+# =========================================
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================================
+# 📄 COBERTURA, TESTS, LOGS
+# =========================================
+*.coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+pytestdebug.log
+celerybeat-schedule
+*.pid
+
+# =========================================
+# 📂 ARCHIVOS DE DJANGO STATIC Y MEDIA
+# =========================================
+staticfiles/
+media/
+
+# =========================================
+# ⚙️ OTROS
+# =========================================
+# Carpetas de exportes, reportes o datos temporales
+exports/
+reports/
+tmp/

@@ -1,0 +1,35 @@
+{% extends "gestion/base.html" %}
+{% block title %}Bitácora de Actividades{% endblock %}
+
+{% block content %}
+<h1> Bitácora de Actividades</h1>
+<p>Registro de acciones realizadas por los usuarios del sistema.</p>
+<hr>
+
+{% if actividades %}
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
+    <thead style="background-color:#f2f2f2;">
+        <tr>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in actividades %}
+        <tr>
+            <td>{{ a.usuario.username }}</td>
+            <td>{{ a.accion }}</td>
+            <td>{{ a.fecha }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay actividades registradas aún.</p>
+{% endif %}
+
+<div style="margin-top:20px; text-align:center;">
+    <a href="{% url 'admin_home' %}" class="btn btn-blue"> Volver al panel</a>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "gestion/base.html" %}
+
+{% block title %}Eliminar Proyecto{% endblock %}
+
+{% block content %}
+<h1 style="color: red;"> Confirmar eliminación</h1>
+<p>¿Estás seguro de que deseas eliminar el proyecto <strong>{{ proyecto.nombre }}</strong>?</p>
+<p>Esta acción no se puede deshacer.</p>
+<hr>
+
+<form method="post" style="margin-top: 20px;">
+    {% csrf_token %}
+    <button type="submit" style="background-color: red; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
+         Eliminar definitivamente
+    </button>
+    <a href="{% url 'lista_proyectos' %}" style="margin-left: 10px; color: #555; text-decoration: none;">
+         Cancelar
+    </a>
+</form>
+{% endblock %}

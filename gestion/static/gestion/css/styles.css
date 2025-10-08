@@ -1,0 +1,151 @@
+/* === PANEL DE ADMINISTRADOR / EMPLEADO === */
+.dashboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    color: var(--color-dark);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+}
+
+.divider {
+    margin: 2rem auto;
+    width: 80%;
+    border: none;
+    border-top: 2px solid var(--color-secondary);
+    opacity: 0.5;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: var(--color-dark);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* === GRID DE OPCIONES === */
+.dashboard-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+/* === TARJETAS === */
+.card {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    padding: 20px;
+    width: 280px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 5px 14px rgba(0,0,0,0.1);
+}
+
+.card-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+/* === BOTONES === */
+/* Estilo general para todos los botones */
+.btn-primary,
+.btn-success,
+.btn-info {
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Botón azul principal */
+.btn-primary {
+    background-color: #007bff;
+}
+.btn-primary:hover {
+    background-color: #0069d9;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.btn-primary:active {
+    background-color: #0056b3;
+    transform: scale(0.97);
+}
+
+/* Botón verde (éxito) */
+.btn-success {
+    background-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.btn-success:active {
+    background-color: #1e7e34;
+    transform: scale(0.97);
+}
+
+/* Botón celeste (información) */
+.btn-info {
+    background-color: #17a2b8;
+}
+.btn-info:hover {
+    background-color: #138496;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.btn-info:active {
+    background-color: #117a8b;
+    transform: scale(0.97);
+}
+
+/* Estado deshabilitado (para los tres) */
+.btn-primary:disabled,
+.btn-success:disabled,
+.btn-info:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* === ESTILOS BASE boton cerrar sesión === */
+/* === BOTÓN DE CERRAR SESIÓN (compacto) === */
+.logout-btn {
+    background: #e63946;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    transition: background 0.25s, transform 0.2s;
+}
+
+.logout-btn:hover {
+    background: #d62828;
+    transform: translateY(-1px);
+}
+
+.logout-btn:active {
+    transform: none;
+}

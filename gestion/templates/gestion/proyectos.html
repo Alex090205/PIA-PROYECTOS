@@ -1,0 +1,66 @@
+{% extends "gestion/base.html" %}
+
+{% block title %}Lista de Proyectos{% endblock %}
+
+{% block content %}
+    <h1> Lista de Proyectos</h1>
+    <p>Consulta, edita o elimina los proyectos registrados en el sistema.</p>
+    <hr>
+
+    {% if proyectos %}
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead style="background-color: #f2f2f2;">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cliente</th>
+                    <th>Fecha inicial</th>
+                    <th>Fecha final</th>
+                    <th>Horas presupuestadas</th>
+                    <th>Situación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in proyectos %}
+                    <tr>
+                        <td>{{ proyecto.id }}</td>
+                        <td>{{ proyecto.nombre }}</td>
+                        <td>{{ proyecto.cliente.nombre }}</td>
+                        <td>{{ proyecto.fecha_inicial }}</td>
+                        <td>{{ proyecto.fecha_final|default:"-" }}</td>
+                        <td>{{ proyecto.cantidad_h|default:"-" }}</td>
+                        <td>
+                            {% if proyecto.situacion == "ACT" %}
+                                🟢 Activo
+                            {% elif proyecto.situacion == "PAU" %}
+                                🟡 Pausado
+                            {% elif proyecto.situacion == "FIN" %}
+                                🔵 Finalizado
+                            {% elif proyecto.situacion == "CAN" %}
+                                🔴 Cancelado
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'editar_proyecto' proyecto.id %}" 
+                               style="color: #007bff; text-decoration: none; margin-right: 8px;">✏️ Editar</a>
+                            <a href="{% url 'eliminar_proyecto' proyecto.id %}" 
+                               style="color: red; text-decoration: none;"> Eliminar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: gray; text-align: center;">No hay proyectos registrados aún.</p>
+    {% endif %}
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{% url 'nuevo_proyecto' %}" 
+           style="padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+            Crear nuevo proyecto
+        </a>
+        <br><br>
+        <a href="{% url 'admin_home' %}" style="text-decoration: none;"> Volver al panel de administrador</a>
+    </div>
+{% endblock %}

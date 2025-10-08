@@ -1,0 +1,132 @@
+{% extends "gestion/base.html" %}
+{% block title %}Registros de Horas - Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: auto; font-family: Arial, sans-serif;">
+    <h1 style="text-align: center; color: #2c3e50;"> Registros de horas trabajadas</h1>
+    <p style="text-align: center; color: #555;">Consulta y filtra los registros de horas de todos los empleados.</p>
+    <hr>
+
+    <!-- 🔹 FILTROS -->
+    <form method="get" style="margin-bottom: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <div>
+            <label for="empleado"> Empleado:</label>
+            <select name="empleado" id="empleado" onchange="this.form.submit()" style="padding: 5px;">
+                <option value="">-- Todos --</option>
+                {% for e in empleados %}
+                    <option value="{{ e.id }}" {% if e.id|stringformat:"s" == empleado_id %}selected{% endif %}>
+                        {{ e.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="proyecto"> Proyecto:</label>
+            <select name="proyecto" id="proyecto" onchange="this.form.submit()" style="padding: 5px;">
+                <option value="">-- Todos --</option>
+                {% for p in proyectos %}
+                    <option value="{{ p.id }}" {% if p.id|stringformat:"s" == proyecto_id %}selected{% endif %}>
+                        {{ p.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <noscript><button type="submit">Filtrar</button></noscript>
+    </form>
+
+    <!-- 🔹 TABLA DE REGISTROS -->
+    {% if registros %}
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <thead style="background-color: #f2f2f2;">
+                <tr>
+                    <th>Empleado</th>
+                    <th>Proyecto</th>
+                    <th>Fecha</th>
+                    <th>Horas</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr>
+                    <td>{{ r.empleado.username }}</td>
+                    <td>{{ r.proyecto.nombre }}</td>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.horas }}</td>
+                    <td>{{ r.descripcion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: gray; text-align: center;">No hay registros disponibles.</p>
+    {% endif %}
+
+    <hr style="margin: 30px 0;">
+
+    <!-- 🔹 RESUMEN POR EMPLEADO -->
+    <h2 style="color: #2c3e50;"> Total de horas por empleado</h2>
+    {% if resumen_empleados %}
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <thead style="background-color: #e9ecef;">
+                <tr>
+                    <th>Empleado</th>
+                    <th>Total de horas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in resumen_empleados %}
+                <tr>
+                    <td>{{ e.empleado__username }}</td>
+                    <td>{{ e.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: gray;">No hay datos de empleados aún.</p>
+    {% endif %}
+
+    <br>
+
+    <!-- 🔹 RESUMEN POR PROYECTO -->
+    <h2 style="color: #2c3e50;"> Total de horas por proyecto</h2>
+    {% if resumen_proyectos %}
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <thead style="background-color: #e9ecef;">
+                <tr>
+                    <th>Proyecto</th>
+                    <th>Total de horas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in resumen_proyectos %}
+                <tr>
+                    <td>{{ p.proyecto__nombre }}</td>
+                    <td>{{ p.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: gray;">No hay datos de proyectos aún.</p>
+    {% endif %}
+
+    <!--  TOTAL GENERAL -->
+    <p style="text-align: right; font-weight: bold; margin-top: 20px;">
+         Total general: {{ total_horas }} horas
+    </p>
+
+    <!--  BOTÓN VOLVER -->
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{% url 'admin_home' %}" 
+           style="padding: 10px 15px; background-color: #6c757d; color: white; border-radius: 5px; text-decoration: none;">
+            Volver al panel del administrador
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+

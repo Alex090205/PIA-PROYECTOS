@@ -1,0 +1,41 @@
+{% extends "gestion/base.html" %}
+{% block title %}Mis Horas{% endblock %}
+
+{% block content %}
+<h1>Mis horas registradas</h1>
+<p>Consulta tus registros de horas trabajadas.</p>
+<hr>
+
+{% if horas %}
+<table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <thead style="background-color: #f2f2f2;">
+        <tr>
+            <th>Proyecto</th>
+            <th>Fecha</th>
+            <th>Horas</th>
+            <th>Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for registro in horas %}
+        <tr>
+            <td>{{ registro.proyecto.nombre }}</td>
+            <td>{{ registro.fecha }}</td>
+            <td>{{ registro.horas }}</td>
+            <td>{{ registro.descripcion }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color: gray; text-align: center;">Aún no tienes registros de horas.</p>
+{% endif %}
+
+<div style="margin-top: 20px; text-align: center;">
+    <a href="{% url 'registrar_horas' %}" style="padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+         Registrar más horas
+    </a>
+    <br><br>
+    <a href="{% url 'empleado_home' %}"> Volver al panel</a>
+</div>
+{% endblock %}
