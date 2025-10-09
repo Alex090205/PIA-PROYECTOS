@@ -7,7 +7,7 @@
     <p style="text-align: center; color: #555;">Consulta y filtra los registros de horas de todos los empleados.</p>
     <hr>
 
-    <!-- 🔹 FILTROS -->
+    <!-- ESTOS SON LOS FILTROS -->
     <form method="get" style="margin-bottom: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
         <div>
             <label for="empleado"> Empleado:</label>
@@ -35,8 +35,8 @@
 
         <noscript><button type="submit">Filtrar</button></noscript>
     </form>
-
-    <!-- 🔹 TABLA DE REGISTROS -->
+    
+    <!--CODIGO PARA LA TABLA DE REGISTROS -->
     {% if registros %}
         <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
             <thead style="background-color: #f2f2f2;">
@@ -66,7 +66,7 @@
 
     <hr style="margin: 30px 0;">
 
-    <!-- 🔹 RESUMEN POR EMPLEADO -->
+    <!--ESTRUCTURA DEL RESUMEN POR EMPLEADO -->
     <h2 style="color: #2c3e50;"> Total de horas por empleado</h2>
     {% if resumen_empleados %}
         <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
@@ -91,7 +91,7 @@
 
     <br>
 
-    <!-- 🔹 RESUMEN POR PROYECTO -->
+    <!-- ESTRUCTURA DEL RESUMEN POR PROYECTO -->
     <h2 style="color: #2c3e50;"> Total de horas por proyecto</h2>
     {% if resumen_proyectos %}
         <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
@@ -116,13 +116,12 @@
 
     <!--  TOTAL GENERAL -->
     <p style="text-align: right; font-weight: bold; margin-top: 20px;">
-         Total general: {{ total_horas }} horas
+        Total general: {{ total_horas }} horas
     </p>
 
-    <!--  BOTÓN VOLVER -->
+    <!--  CODIGO DEL BOTÓN PARA VOLVER -->
     <div style="text-align: center; margin-top: 30px;">
-        <a href="{% url 'admin_home' %}" 
-           style="padding: 10px 15px; background-color: #6c757d; color: white; border-radius: 5px; text-decoration: none;">
+        <a href="{% url 'admin_home' %}" style="padding: 10px 15px; background-color: #6c757d; color: white; border-radius: 5px; text-decoration: none;">
             Volver al panel del administrador
         </a>
     </div>

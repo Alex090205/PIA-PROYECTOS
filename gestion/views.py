@@ -229,7 +229,7 @@ def ver_registros_horas_admin(request):
     return render(request, 'gestion/registro_horas_admin.html', context)
 
 
-# === ADMINISTRADOR: VER BITÁCORA DE ACTIVIDADES ===
+# === ADMINISTRADOR: VER BITÁCORA DE ACTIVIDADES FALTA RELACIONAR EL URLS Y DEFINIR LA BITACORA===
 @login_required
 def ver_actividades(request):
     """Muestra la bitácora de acciones registradas (solo admin)."""

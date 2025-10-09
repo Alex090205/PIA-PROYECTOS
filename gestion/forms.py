@@ -2,7 +2,7 @@ from django import forms
 from .models import Proyecto, RegistroHoras
 
 
-# === FORMULARIO DE PROYECTOS (ADMINISTRADOR) ===
+# === FORMULARIO DE PROYECTOS (SOLO ACCESO AL ADMINISTRADOR) ===
 class ProyectoForm(forms.ModelForm):
     """
     Formulario para crear y editar proyectos.
@@ -74,7 +74,7 @@ class ProyectoForm(forms.ModelForm):
         return cleaned_data
 
 
-# === FORMULARIO DE REGISTRO DE HORAS (EMPLEADOS) ===
+# === FORMULARIO DE REGISTRO DE HORAS (SOLO PARA EMPLEADOS) ===
 class RegistroHorasForm(forms.ModelForm):
     """
     Formulario para que los empleados registren sus horas trabajadas
@@ -119,7 +119,7 @@ class RegistroHorasForm(forms.ModelForm):
                 f"No puedes registrar horas en un proyecto {proyecto.get_situacion_display().lower()}."
             )
 
-        # Validar fecha futura
+        # Validar fecha futura, para proteccion del codigo.(ESTADO EN REVISION)
         from datetime import date
         if fecha and fecha > date.today():
             self.add_error('fecha', 'No puedes registrar horas en fechas futuras.')
