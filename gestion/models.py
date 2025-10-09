@@ -104,7 +104,7 @@ class RegistroHoras(models.Model):
         return f"{self.empleado.username} - {self.horas}h en {self.proyecto.nombre}"
 
 
-# === ACTIVIDAD (BITÁCORA DE ACCIONES) ===
+# === ACTIVIDAD (BITÁCORA DE ACCIONES) FALTA DEFINIR FUNCION===
 class Actividad(models.Model):
     """
     Registra acciones realizadas en el sistema (alta, edición, eliminación, etc.)

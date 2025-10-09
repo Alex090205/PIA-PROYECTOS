@@ -1,5 +1,5 @@
 # =========================================
-# 🐍 DJANGO / PYTHON
+#  DJANGO / PYTHON
 # =========================================
 __pycache__/
 *.py[cod]
@@ -11,13 +11,13 @@ __pycache__/
 *.mo
 
 # =========================================
-# 🗄️ BASE DE DATOS LOCAL
+#  BASE DE DATOS LOCAL
 # =========================================
 db.sqlite3
 *.sqlite3
 
 # =========================================
-# 🧠 ENTORNOS VIRTUALES
+#  ENTORNOS VIRTUALES
 # =========================================
 venv/
 .venv/
@@ -27,7 +27,7 @@ env.bak/
 venv.bak/
 
 # =========================================
-# 🔒 ARCHIVOS DE CONFIGURACIÓN / SECRETS
+#  ARCHIVOS DE CONFIGURACIÓN / SECRETS
 # =========================================
 .env
 *.env
@@ -36,14 +36,14 @@ venv.bak/
 .env.production
 
 # =========================================
-# 🧩 MIGRACIONES (solo mantiene __init__.py)
+#  MIGRACIONES (solo mantiene __init__.py)
 # =========================================
 */migrations/__pycache__/
 */migrations/*.py
 !*/migrations/__init__.py
 
 # =========================================
-# 💻 CONFIGURACIÓN DE IDEs
+#  CONFIGURACIÓN DE IDEs
 # =========================================
 .vscode/
 .vs/
@@ -52,7 +52,7 @@ venv.bak/
 *.sublime-workspace
 
 # =========================================
-# 📦 ARCHIVOS DE COMPILACIÓN / CACHE
+#  ARCHIVOS DE COMPILACIÓN / CACHE
 # =========================================
 build/
 dist/
@@ -62,7 +62,7 @@ dist/
 pip-wheel-metadata/
 
 # =========================================
-# 📂 ARCHIVOS TEMPORALES Y DE SISTEMA
+#  ARCHIVOS TEMPORALES Y DE SISTEMA
 # =========================================
 *.tmp
 *.bak
@@ -72,7 +72,7 @@ Thumbs.db
 desktop.ini
 
 # =========================================
-# 📄 COBERTURA, TESTS, LOGS
+#  COBERTURA, TESTS, LOGS
 # =========================================
 *.coverage
 .coverage
@@ -84,13 +84,13 @@ celerybeat-schedule
 *.pid
 
 # =========================================
-# 📂 ARCHIVOS DE DJANGO STATIC Y MEDIA
+#  ARCHIVOS DE DJANGO STATIC Y MEDIA
 # =========================================
 staticfiles/
 media/
 
 # =========================================
-# ⚙️ OTROS
+#  OTROS
 # =========================================
 # Carpetas de exportes, reportes o datos temporales
 exports/
