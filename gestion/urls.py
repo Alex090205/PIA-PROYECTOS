@@ -25,4 +25,11 @@ urlpatterns = [
     path('gestion/horas/', views.ver_registros_horas_admin, name='ver_registros_horas_admin'),
     path('admin/actividades/', views.ver_actividades, name='ver_actividades'),
 
+    path('registrar/cliente/', views.registrar_cliente, name='registrar_cliente'),
+
+    path('registrar/usuario/', views.registrar_usuario, name='registrar_usuario'),
+
+    path('reportes/', views.reportes, name='reportes'),
+
+    path('empleados/', views.empleados, name='empleados'),
 ]

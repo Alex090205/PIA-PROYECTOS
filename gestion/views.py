@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.contrib.auth.models import User
-from .models import Proyecto, RegistroHoras, Actividad   # ✅ Importamos Actividad
+from .models import Proyecto, RegistroHoras, Actividad   
 from .forms import ProyectoForm, RegistroHorasForm
 
 
@@ -238,3 +238,35 @@ def ver_actividades(request):
 
     actividades = Actividad.objects.select_related('usuario').order_by('-fecha')[:100]
     return render(request, 'gestion/actividades.html', {'actividades': actividades})
+
+def registrar_cliente(request):
+    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
+    # clientes = Cliente.objects.all()
+    # context = {'clientes': clientes}
+
+    # Por ahora, solo le decimos que muestre el archivo HTML
+    return render(request, 'gestion/registrar_cliente.html') #, context)
+
+def registrar_usuario(request):
+    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
+    # clientes = Cliente.objects.all()
+    # context = {'clientes': clientes}
+
+    # Por ahora, solo le decimos que muestre el archivo HTML
+    return render(request, 'gestion/registrar_usuario.html') #, context)
+
+def reportes(request):
+    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
+    # clientes = Cliente.objects.all()
+    # context = {'clientes': clientes}
+
+    # Por ahora, solo le decimos que muestre el archivo HTML
+    return render(request, 'gestion/reportes.html') #, context)
+
+def empleados(request):
+    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
+    # clientes = Cliente.objects.all()
+    # context = {'clientes': clientes}
+
+    # Por ahora, solo le decimos que muestre el archivo HTML
+    return render(request, 'gestion/empleados.html') #, context)

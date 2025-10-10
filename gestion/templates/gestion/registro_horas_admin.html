@@ -67,7 +67,7 @@
     <hr style="margin: 30px 0;">
 
     <!--ESTRUCTURA DEL RESUMEN POR EMPLEADO -->
-    <h2 style="color: #2c3e50;"> Total de horas por empleado</h2>
+    <!--<h2 style="color: #2c3e50;"> Total de horas por empleado</h2>
     {% if resumen_empleados %}
         <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
             <thead style="background-color: #e9ecef;">
@@ -90,6 +90,8 @@
     {% endif %}
 
     <br>
+
+    -->
 
     <!-- ESTRUCTURA DEL RESUMEN POR PROYECTO -->
     <h2 style="color: #2c3e50;"> Total de horas por proyecto</h2>
@@ -115,10 +117,10 @@
     {% endif %}
 
     <!--  TOTAL GENERAL -->
-    <p style="text-align: right; font-weight: bold; margin-top: 20px;">
+    <!-- <p style="text-align: right; font-weight: bold; margin-top: 20px;">
         Total general: {{ total_horas }} horas
     </p>
-
+-->
     <!--  CODIGO DEL BOTÓN PARA VOLVER -->
     <div style="text-align: center; margin-top: 30px;">
         <a href="{% url 'admin_home' %}" style="padding: 10px 15px; background-color: #6c757d; color: white; border-radius: 5px; text-decoration: none;">
