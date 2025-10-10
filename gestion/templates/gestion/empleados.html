@@ -1,37 +1,57 @@
 {% extends "gestion/base.html" %}
-{% block title %}Empleados - Admin{% endblock %}
+{% block title %}Empleados{% endblock %}
 
 {% block content %}
-<div style="max-width: 1100px; margin: auto; font-family: Arial, sans-serif;">
-    <h1 style="text-align: center; color: #2c3e50;"> Empleados</h1>
-    <p style="text-align: center; color: #555;">Visualiza la información de los empleados con sus respectivos proyectos.</p>
-    <hr>
+<h1>👥 Empleados</h1>
+<p>Asignación y consulta de proyectos por empleado.</p>
+<hr>
 
+<table>
+  <thead>
+    <tr>
+      <th>Usuario</th>
+      <th>Proyectos asignados</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for e in empleados %}
+    <tr>
+      <td>
+        <strong>{{ e.username }}</strong><br>
+        <small>{{ e.email }}</small>
+      </td>
+      <td>
+        {% if e.asignaciones.all %}
+          {% for a in e.asignaciones.all %}
+            <div class="card" style="margin-bottom:6px; padding:8px;">
+              <div><strong>{{ a.proyecto.nombre }}</strong> — 
+                  {% if a.activo %}<span style="color: #16a34a;">Activo</span>{% else %}<span style="color:#ef4444;">Baja</span>{% endif %}
+              </div>
+              <small>Rol: {{ a.get_rol_en_proyecto_display }}</small>
+              {% if a.activo %}
+                <form method="post" action="{% url 'desasignar_proyecto_empleado' e.id a.proyecto.id %}" style="margin-top:6px;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn" style="background:#e63946;">Desasignar</button>
+                </form>
+              {% endif %}
+            </div>
+          {% empty %}
+            <span style="color:#6C757D;">Sin proyectos asignados.</span>
+          {% endfor %}
+        {% else %}
+          <span style="color:#6C757D;">Sin proyectos asignados.</span>
+        {% endif %}
+      </td>
+      <td>
+        <a class="btn btn-primary" href="{% url 'asignar_proyecto_empleado' e.id %}">Asignar proyecto</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 
-    <h2 style="color: #2c3e50;"> Empleados</h2>
-        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-            <thead style="background-color: #e9ecef;">
-                <tr>
-                    <th>Empleado</th>
-                    <th>Proyectos trabajados</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for e in resumen_empleados %}
-                <tr>
-                    <td>{{ e.empleado__username }}</td>
-                    <td>{{ e.total }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-    <br>
-
-     <!--  CODIGO DEL BOTÓN PARA VOLVER -->
-    <div style="text-align: center; margin-top: 30px;">
-        <a href="{% url 'admin_home' %}" style="padding: 10px 15px; background-color: #6c757d; color: white; border-radius: 5px; text-decoration: none;">
-            Volver al panel del administrador
-        </a>
-    </div>
+<div style="margin-top: 20px;">
+  <a href="{% url 'admin_home' %}">← Volver al panel</a>
+</div>
 {% endblock %}

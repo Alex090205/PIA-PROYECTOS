@@ -1,0 +1,13 @@
+{% extends "gestion/base.html" %}
+{% block title %}Confirmar desasignación{% endblock %}
+
+{% block content %}
+<h2>Desasignar proyecto</h2>
+<p>¿Deseas desasignar el proyecto <strong>{{ proyecto.nombre }}</strong> del empleado <strong>{{ empleado.username }}</strong>?</p>
+
+<form method="post" style="margin-top: 12px;">
+  {% csrf_token %}
+  <button type="submit" class="btn" style="background:#e63946;">Sí, desasignar</button>
+  <a href="{% url 'lista_empleados' %}" class="btn">Cancelar</a>
+</form>
+{% endblock %}

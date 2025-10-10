@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 # === PERFIL DE USUARIO ===
@@ -75,6 +76,13 @@ class Proyecto(models.Model):
         related_name='proyectos_administrados',
         blank=True
     )
+    empleados = models.ManyToManyField(
+        User,
+        through='AsignacionProyecto',
+        related_name='proyectos_como_empleado',
+        blank=True,
+        limit_choices_to={'is_staff': False}
+    )
 
     def __str__(self):
         return self.nombre
@@ -116,3 +124,47 @@ class Actividad(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} - {self.accion} ({self.fecha.strftime('%d/%m/%Y %H:%M')})"
+
+
+
+# ...tus modelos existentes arriba (Perfil, Cliente, Proyecto, RegistroHoras, Actividad)
+
+class AsignacionProyecto(models.Model):
+    """
+    Relación Empleado <-> Proyecto con metadatos (rol, activo, fechas).
+    """
+    ROL_CHOICES = [
+        ('DEV', 'Desarrollador'),
+        ('PM', 'Project Manager'),
+        ('QA', 'QA / Tester'),
+        ('OT', 'Otro'),
+    ]
+
+    empleado = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        limit_choices_to={'is_staff': False},
+        related_name='asignaciones'
+    )
+    proyecto = models.ForeignKey(
+        Proyecto,
+        on_delete=models.CASCADE,
+        related_name='asignaciones'
+    )
+    rol_en_proyecto = models.CharField(max_length=3, choices=ROL_CHOICES, default='OT')
+    activo = models.BooleanField(default=True)
+    fecha_asignacion = models.DateField(auto_now_add=True)
+    fecha_baja = models.DateField(blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['empleado', 'proyecto'],
+                condition=models.Q(activo=True),
+                name='uq_asignacion_activa_por_empleado_proyecto'
+            )
+        ]
+
+    def __str__(self):
+        estado = 'Activo' if self.activo else 'Baja'
+        return f"{self.empleado.username} -> {self.proyecto.nombre} ({estado})"

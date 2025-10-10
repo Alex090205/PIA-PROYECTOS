@@ -1,5 +1,6 @@
 from django import forms
-from .models import Proyecto, RegistroHoras
+from django.contrib.auth.models import User
+from .models import Proyecto, RegistroHoras, AsignacionProyecto
 
 
 # === FORMULARIO DE PROYECTOS (SOLO ACCESO AL ADMINISTRADOR) ===
@@ -134,3 +135,27 @@ class RegistroHorasForm(forms.ModelForm):
         if horas is not None and horas <= 0:
             raise forms.ValidationError('Las horas deben ser mayores a 0.')
         return horas
+class AsignarProyectoForm(forms.ModelForm):
+    """
+    Form para asignar un proyecto a un empleado (evita duplicar asignaciones activas).
+    """
+    def __init__(self, *args, **kwargs):
+        empleado = kwargs.pop('empleado', None)
+        super().__init__(*args, **kwargs)
+
+        # Solo proyectos activos
+        qs = Proyecto.objects.all()
+
+        if empleado is not None:
+            # Excluir los ya asignados activos
+            qs = qs.exclude(asignaciones__empleado=empleado, asignaciones__activo=True)
+
+        self.fields['proyecto'].queryset = qs.order_by('nombre')
+
+    class Meta:
+        model = AsignacionProyecto
+        fields = ['proyecto', 'rol_en_proyecto']
+        widgets = {
+            'proyecto': forms.Select(attrs={'class': 'form-control'}),
+            'rol_en_proyecto': forms.Select(attrs={'class': 'form-control'}),
+        }

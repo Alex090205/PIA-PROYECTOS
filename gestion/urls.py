@@ -31,5 +31,12 @@ urlpatterns = [
 
     path('reportes/', views.reportes, name='reportes'),
 
-    path('empleados/', views.empleados, name='empleados'),
+
+
+
+# === EMPLEADOS: gestión y asignaciones (solo admin) ===
+path('empleados/', views.lista_empleados, name='lista_empleados'),
+path('empleados/<int:empleado_id>/asignar/', views.asignar_proyecto_empleado, name='asignar_proyecto_empleado'),
+path('empleados/<int:empleado_id>/desasignar/<int:proyecto_id>/', views.desasignar_proyecto_empleado, name='desasignar_proyecto_empleado'),
+
 ]

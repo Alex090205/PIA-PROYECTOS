@@ -2,10 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
-from django.contrib.auth.models import User
+# from django.db.models import Sum
+#from django.contrib.auth.models import User
 from .models import Proyecto, RegistroHoras, Actividad   
 from .forms import ProyectoForm, RegistroHorasForm
+from django.utils import timezone
+from django.db.models import Sum, Prefetch
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+from .models import Proyecto, RegistroHoras, Actividad, AsignacionProyecto
+from .forms import ProyectoForm, RegistroHorasForm, AsignarProyectoForm
 
 
 # === LOGIN ===
@@ -270,3 +278,93 @@ def empleados(request):
 
     # Por ahora, solo le decimos que muestre el archivo HTML
     return render(request, 'gestion/empleados.html') #, context)
+
+
+# --- LISTA DE EMPLEADOS ---
+@login_required
+def lista_empleados(request):
+    if not request.user.is_staff:
+        return redirect('empleado_home')
+
+    empleados = (
+        User.objects
+        .filter(is_staff=False, is_active=True)
+        .prefetch_related(
+            Prefetch(
+                'proyectos_como_empleado',
+                queryset=Proyecto.objects.only('id', 'nombre', 'situacion')
+            ),
+            Prefetch(
+                'asignaciones',
+                queryset=AsignacionProyecto.objects.select_related('proyecto').order_by('-activo', 'proyecto__nombre')
+            )
+        )
+        .order_by('username')
+    )
+
+    return render(request, 'gestion/empleados.html', {'empleados': empleados})
+
+
+# --- ASIGNAR PROYECTO A EMPLEADO ---
+@login_required
+def asignar_proyecto_empleado(request, empleado_id):
+    if not request.user.is_staff:
+        return redirect('empleado_home')
+
+    empleado = get_object_or_404(User, id=empleado_id, is_staff=False)
+
+    if request.method == 'POST':
+        form = AsignarProyectoForm(request.POST, empleado=empleado)
+        if form.is_valid():
+            asig = form.save(commit=False)
+            asig.empleado = empleado
+            asig.activo = True
+            asig.fecha_asignacion = timezone.now().date()
+            asig.save()
+
+            Actividad.objects.create(
+                usuario=request.user,
+                accion=f"Asignó el proyecto '{asig.proyecto.nombre}' a {empleado.username} (rol: {asig.get_rol_en_proyecto_display()})."
+            )
+
+            return redirect('lista_empleados')
+    else:
+        form = AsignarProyectoForm(empleado=empleado)
+
+    return render(request, 'gestion/asignar_proyecto.html', {
+        'empleado': empleado,
+        'form': form
+    })
+
+
+# --- DESASIGNAR (BAJA) PROYECTO DE EMPLEADO ---
+@login_required
+def desasignar_proyecto_empleado(request, empleado_id, proyecto_id):
+    if not request.user.is_staff:
+        return redirect('empleado_home')
+
+    empleado = get_object_or_404(User, id=empleado_id, is_staff=False)
+    asignacion = get_object_or_404(
+        AsignacionProyecto,
+        empleado=empleado,
+        proyecto_id=proyecto_id,
+        activo=True
+    )
+
+    if request.method == 'POST':
+        asignacion.activo = False
+        asignacion.fecha_baja = timezone.now().date()
+        asignacion.save()
+
+        Actividad.objects.create(
+            usuario=request.user,
+            accion=f"Desasignó el proyecto '{asignacion.proyecto.nombre}' de {empleado.username}."
+        )
+
+        return redirect('lista_empleados')
+
+    # Confirmación simple
+    return render(request, 'gestion/confirmar_desasignacion.html', {
+        'empleado': empleado,
+        'proyecto': asignacion.proyecto
+    })
