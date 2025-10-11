@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Proyecto, RegistroHoras, AsignacionProyecto
+from .models import Proyecto, RegistroHoras, AsignacionProyecto, Cliente
 
 
 # === FORMULARIO DE PROYECTOS (SOLO ACCESO AL ADMINISTRADOR) ===
@@ -158,4 +158,12 @@ class AsignarProyectoForm(forms.ModelForm):
         widgets = {
             'proyecto': forms.Select(attrs={'class': 'form-control'}),
             'rol_en_proyecto': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['nombre', 'rfc', 'direccion', 'correo', 'telefono']
+        widgets = {
+            'direccion': forms.TextInput(attrs={'class': 'form-control'}),
         }

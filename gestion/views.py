@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 # from django.db.models import Sum
 #from django.contrib.auth.models import User
 from .models import Proyecto, RegistroHoras, Actividad   
-from .forms import ProyectoForm, RegistroHorasForm
+from .forms import ProyectoForm, RegistroHorasForm, ClienteForm
 from django.utils import timezone
 from django.db.models import Sum, Prefetch
 from django.contrib.auth.models import User
@@ -247,13 +247,13 @@ def ver_actividades(request):
     actividades = Actividad.objects.select_related('usuario').order_by('-fecha')[:100]
     return render(request, 'gestion/actividades.html', {'actividades': actividades})
 
-def registrar_cliente(request):
+#def registrar_cliente(request):
     # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
     # clientes = Cliente.objects.all()
     # context = {'clientes': clientes}
 
     # Por ahora, solo le decimos que muestre el archivo HTML
-    return render(request, 'gestion/registrar_cliente.html') #, context)
+   # return render(request, 'gestion/registrar_cliente.html') #, context)
 
 def registrar_usuario(request):
     # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
@@ -368,3 +368,25 @@ def desasignar_proyecto_empleado(request, empleado_id, proyecto_id):
         'empleado': empleado,
         'proyecto': asignacion.proyecto
     })
+
+@login_required
+def registrar_cliente(request):
+    """
+    Vista para crear un nuevo cliente.
+    Solo accesible para administradores.
+    """
+   
+    if not request.user.is_staff:
+        return redirect('home') 
+
+
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            form.save() 
+            return redirect('admin_home') 
+    else:
+        
+        form = ClienteForm() 
+
+    return render(request, 'gestion/registrar_cliente.html', {'form': form})

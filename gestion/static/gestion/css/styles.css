@@ -149,3 +149,129 @@
 .logout-btn:active {
     transform: none;
 }
+
+/* === CONTENEDOR DEL FORMULARIO === */
+.form-container {
+    max-width: 500px;       /* Antes estaba más grande, ahora más compacto */
+    margin: 30px auto;      /* Centrado vertical y horizontal */
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 2em;           /* Espacio interno */
+    font-family: "Poppins", Arial, sans-serif;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.form-container h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 0.5em;
+    font-size: 1.6em;
+    font-weight: 600;
+}
+
+.form-container p {
+    text-align: center;
+    color: #555;
+    margin-bottom: 1em;
+    font-size: 0.9em;
+}
+
+.form-container hr {
+    border: none;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin-bottom: 1.5em;
+}
+
+/* === CAMPOS DEL FORMULARIO === */
+form p {
+    margin-bottom: 0.8em;
+}
+
+form label {
+    display: block;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 4px;
+    font-size: 0.95em;
+}
+
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 8px 10px;     /* Campos más pequeños */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95em;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 6px rgba(40, 167, 69, 0.2);
+}
+
+/* === BOTONES === */
+.form-actions {
+    text-align: center;
+    margin-top: 1.5em;
+}
+
+.btn {
+    padding: 10px 18px;     /* Botones más pequeños */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.25s ease;
+}
+
+.btn-primary {
+    background-color: #28a745;
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(40, 167, 69, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 10px rgba(33, 136, 56, 0.3);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    margin-left: 10px;
+    box-shadow: 0 3px 8px rgba(108, 117, 125, 0.2);
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    box-shadow: 0 4px 10px rgba(90, 98, 104, 0.3);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+    .form-container {
+        padding: 1.5em;
+        margin: 20px auto;
+    }
+
+    .btn {
+        width: 100%;
+        margin: 6px 0;
+    }
+
+    .btn-secondary {
+        margin-left: 0;
+    }
+}
+

@@ -34,6 +34,7 @@ urlpatterns = [
 
 
 
+
 # === EMPLEADOS: gestión y asignaciones (solo admin) ===
 path('empleados/', views.lista_empleados, name='lista_empleados'),
 path('empleados/<int:empleado_id>/asignar/', views.asignar_proyecto_empleado, name='asignar_proyecto_empleado'),
