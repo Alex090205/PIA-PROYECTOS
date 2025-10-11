@@ -401,8 +401,8 @@ def registrar_usuario(request):
     if request.method == 'POST':
         form = EmpleadoForm(request.POST)
         if form.is_valid():
-            form.save() # Aquí ocurre la magia: se crea el User y el Perfil
-            return redirect('home') # O a una página de éxito
+            form.save() 
+            return redirect('home') 
     else:
         form = EmpleadoForm()
 
