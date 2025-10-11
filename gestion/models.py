@@ -168,3 +168,19 @@ class AsignacionProyecto(models.Model):
     def __str__(self):
         estado = 'Activo' if self.activo else 'Baja'
         return f"{self.empleado.username} -> {self.proyecto.nombre} ({estado})"
+
+
+class PerfilEmpleado(models.Model):
+    # Enlace uno-a-uno con el modelo User de Django
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Campos de nombre personalizados
+    primer_nombre = models.CharField(max_length=150)
+    segundo_nombre = models.CharField(max_length=150, blank=True) # blank=True lo hace opcional
+    primer_apellido = models.CharField(max_length=150)
+    segundo_apellido = models.CharField(max_length=150)
+
+    # Aquí es un buen lugar para añadir otros campos como 'puesto' o 'costo_por_hora' en el futuro
+
+    def __str__(self):
+        return f"{self.primer_nombre} {self.primer_apellido}"

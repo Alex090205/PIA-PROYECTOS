@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 # from django.db.models import Sum
 #from django.contrib.auth.models import User
 from .models import Proyecto, RegistroHoras, Actividad   
-from .forms import ProyectoForm, RegistroHorasForm, ClienteForm
+from .forms import ProyectoForm, RegistroHorasForm, ClienteForm, EmpleadoForm
 from django.utils import timezone
 from django.db.models import Sum, Prefetch
 from django.contrib.auth.models import User
@@ -390,3 +390,20 @@ def registrar_cliente(request):
         form = ClienteForm() 
 
     return render(request, 'gestion/registrar_cliente.html', {'form': form})
+
+
+@login_required
+def registrar_usuario(request):
+    # Solo los administradores pueden registrar empleados
+    if not request.user.is_staff:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST)
+        if form.is_valid():
+            form.save() # Aquí ocurre la magia: se crea el User y el Perfil
+            return redirect('home') # O a una página de éxito
+    else:
+        form = EmpleadoForm()
+
+    return render(request, 'gestion/registrar_usuario.html', {'form': form})

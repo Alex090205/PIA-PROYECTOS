@@ -1,16 +1,23 @@
 {% extends "gestion/base.html" %}
-{% block title %}Registros de Usuarios - Admin{% endblock %}
+
+{% block title %}Registrar Nuevo Empleado{% endblock %}
 
 {% block content %}
-<div style="max-width: 1100px; margin: auto; font-family: Arial, sans-serif;">
-    <h1 style="text-align: center; color: #2c3e50;"> Registro de Nuevos Usuarios</h1>
-    <p style="text-align: center; color: #555;">Registra Nuevos Usuarios en el Sistema.</p>
-    <hr>
+    <div class="form-container">
+        <h2>Registrar Nuevo Empleado</h2>
+        <p>El nombre de usuario se generará automáticamente.</p>
 
-     <!--  CODIGO DEL BOTÓN PARA VOLVER -->
-    <div style="text-align: center; margin-top: 30px;">
-        <a href="{% url 'admin_home' %}" style="padding: 10px 15px; background-color: #6c757d; color: white; border-radius: 5px; text-decoration: none;">
-            Volver al panel del administrador
-        </a>
+        <p style="background-color: #e9f7fd; border-left: 5px solid #007bff; padding: 15px; margin-bottom: 20px;">
+            <strong>Instrucción:</strong> Asigna una contraseña temporal. El empleado deberá cambiarla en su primer inicio de sesión.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Crear Empleado</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
     </div>
 {% endblock %}

@@ -31,6 +31,8 @@ urlpatterns = [
 
     path('reportes/', views.reportes, name='reportes'),
 
+    path('registrar/usuario/', views.registrar_usuario, name='registrar_usuario'),
+
 
 
 

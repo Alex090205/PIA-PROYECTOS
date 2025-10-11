@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Proyecto, RegistroHoras, AsignacionProyecto, Cliente
+from .models import Proyecto, RegistroHoras, AsignacionProyecto, Cliente, PerfilEmpleado
+from django.contrib.auth.forms import UserCreationForm
 
 
 # === FORMULARIO DE PROYECTOS (SOLO ACCESO AL ADMINISTRADOR) ===
@@ -167,3 +168,47 @@ class ClienteForm(forms.ModelForm):
         widgets = {
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+class EmpleadoForm(forms.ModelForm):
+    # Definimos los campos que no están en PerfilEmpleado pero que necesitamos
+    email = forms.EmailField(required=True, label="Correo Electrónico")
+    password = forms.CharField(widget=forms.PasswordInput, label="Contraseña Temporal")
+
+    class Meta:
+        model = PerfilEmpleado
+        # Especificamos los campos del PerfilEmpleado que queremos en el formulario
+        fields = ['primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido']
+
+    def save(self, commit=True):
+        # Obtenemos los datos limpios del formulario
+        primer_nombre = self.cleaned_data.get('primer_nombre')
+        primer_apellido = self.cleaned_data.get('primer_apellido')
+
+        # --- Lógica para generar el nombre de usuario ---
+        if primer_nombre and primer_apellido:
+            base_username = f"{primer_apellido.upper()}{primer_nombre[0].upper()}"
+            username = base_username
+            counter = 1
+            # Nos aseguramos de que el username sea único
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+        else:
+            # Si los campos están vacíos, genera un error (esto no debería pasar por las validaciones)
+            raise ValueError("El primer nombre y el primer apellido son requeridos.")
+
+        # --- Creación del User de Django ---
+        user = User.objects.create_user(
+            username=username,
+            email=self.cleaned_data.get('email'),
+            password=self.cleaned_data.get('password'),
+            first_name=primer_nombre, # Guardamos el primer nombre en el campo por defecto de User
+            last_name=primer_apellido, # y el primer apellido
+        )
+
+        # --- Creación y enlace del PerfilEmpleado ---
+        perfil = super().save(commit=False)
+        perfil.user = user # Enlazamos el perfil con el usuario recién creado
+        if commit:
+            perfil.save()
+        return perfil
