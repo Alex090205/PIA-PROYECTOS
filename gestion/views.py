@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 # from django.db.models import Sum
 #from django.contrib.auth.models import User
-from .models import Proyecto, RegistroHoras, Actividad   
+from .models import Proyecto, RegistroHoras, Actividad, Cliente   
 from .forms import ProyectoForm, RegistroHorasForm, ClienteForm, EmpleadoForm
 from django.utils import timezone
 from django.db.models import Sum, Prefetch
@@ -303,6 +303,21 @@ def lista_empleados(request):
     )
 
     return render(request, 'gestion/empleados.html', {'empleados': empleados})
+
+
+# === GESTIÓN DE CLIENTES (ADMIN) ===
+@login_required
+def lista_clientes(request):
+    if not request.user.is_staff:
+        return redirect('empleado_home')
+
+    clientes = Cliente.objects.all()
+
+    context = {
+        'clientes': clientes
+    }
+
+    return render(request, 'gestion/lista_clientes.html', context)
 
 
 # --- ASIGNAR PROYECTO A EMPLEADO ---

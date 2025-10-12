@@ -42,7 +42,7 @@
 
         <!-- RECUADRO PARA REGISTRAR CLIENTES -->
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
+            <img src="{% static 'gestion/img/icons/cliente.svg' %}" alt="Nuevo proyecto" class="card-icon">
             <h3>Registrar Nuevo Cliente</h3>
             <p>Registra un nuevo cliente al sistema.</p>
             <a href="{% url 'registrar_cliente' %}" class="btn btn-success">Registrar nuevo</a>
@@ -51,7 +51,7 @@
         <!-- RECUADRO PARA REGISTRAR USUARIOS -->
 
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
+            <img src="{% static 'gestion/img/icons/usuario.svg' %}" alt="Nuevo proyecto" class="card-icon">
             <h3>Registrar Nuevo Usuario</h3>
             <p>Registra Nuevos Usuarios</p>
             <a href="{% url 'registrar_usuario' %}" class="btn btn-success">Registrar nuevo</a>
@@ -60,7 +60,7 @@
         <!-- RECUADRO PARA VER REPORTES -->
 
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
+            <img src="{% static 'gestion/img/icons/reportes.svg' %}" alt="Nuevo proyecto" class="card-icon">
             <h3>Reportes</h3>
             <p>Consulta los Reportes</p>
             <a href="{% url 'reportes' %}" class="btn btn-info">Consultar reportes</a>
@@ -68,12 +68,19 @@
 
         <!-- RECUADRO PARA VER EMPLEADOS -->
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
+            <img src="{% static 'gestion/img/icons/usuarios.svg' %}" alt="Nuevo proyecto" class="card-icon">
             <h3>Ver empleados</h3>
-            <p>Consulta los Empleados</p>
+            <p>Consulta todos los Empleados registrados en el sistema</p>
             <a href="{% url 'lista_empleados' %}" class="btn btn-primary">Ver empleados</a>
 
             
+        </div>
+
+        <div class="admin-card">
+            <img src="{% static 'gestion/img/icons/clientes.svg' %}" alt="Clientes" class="card-icon">
+            <h3>Ver clientes</h3>
+            <p>Consulta todos los Clientes registrados en el sistema.</p>
+            <a href="{% url 'lista_clientes' %}" class="btn btn-primary">Ver clientes</a>
         </div>
     </div>
 </div>

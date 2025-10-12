@@ -21,6 +21,9 @@ urlpatterns = [
     path('horas/registrar/', views.registrar_horas, name='registrar_horas'),
     path('horas/mis-horas/', views.mis_horas, name='mis_horas'),
 
+    # === GESTIÓN DE CLIENTES (NUEVA SECCIÓN) ===
+    path('clientes/', views.lista_clientes, name='lista_clientes'),
+
     # === ADMINISTRADOR: Ver todos los registros de horas ===
     path('gestion/horas/', views.ver_registros_horas_admin, name='ver_registros_horas_admin'),
     path('admin/actividades/', views.ver_actividades, name='ver_actividades'),
