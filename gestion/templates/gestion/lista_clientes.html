@@ -14,6 +14,7 @@
                     <th>ID</th>
                     <th>Nombre del Cliente</th>
                     <th>RFC</th>
+                    <th>Dirección</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
                 </tr>
@@ -24,6 +25,7 @@
                         <td>{{ cliente.id }}</td>
                         <td><strong>{{ cliente.nombre }}</strong></td>
                         <td>{{ cliente.rfc }}</td>
+                        <td>{{ cliente.direccion|default:"-" }}</td>
                         <td>{{ cliente.correo|default:"-" }}</td>
                         <td>{{ cliente.telefono|default:"-" }}</td>
                     </tr>
