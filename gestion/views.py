@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 # from django.db.models import Sum
 #from django.contrib.auth.models import User
 from .models import Proyecto, RegistroHoras, Actividad, Cliente   
-from .forms import ProyectoForm, RegistroHorasForm, ClienteForm, EmpleadoForm
+from .forms import ProyectoCreateForm, ProyectoUpdateForm,  RegistroHorasForm, ClienteForm, EmpleadoForm
 from django.utils import timezone
 from django.db.models import Sum, Prefetch
 from django.contrib.auth.models import User
@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
 from .models import Proyecto, RegistroHoras, Actividad, AsignacionProyecto
-from .forms import ProyectoForm, RegistroHorasForm, AsignarProyectoForm
+from .forms import ProyectoCreateForm, RegistroHorasForm, AsignarProyectoForm
 
 
 # === LOGIN ===
@@ -75,6 +75,9 @@ def lista_proyectos(request):
     return render(request, 'gestion/proyectos.html', {'proyectos': proyectos})
 
 
+# Asegúrate de que esta línea esté al principio de tu archivo, junto a los otros imports
+ 
+
 @login_required
 def nuevo_proyecto(request):
     """Permite crear un nuevo proyecto (solo admin)."""
@@ -82,19 +85,21 @@ def nuevo_proyecto(request):
         return redirect('empleado_home')
 
     if request.method == 'POST':
-        form = ProyectoForm(request.POST)
+        # Aquí usamos el nuevo formulario de creación
+        form = ProyectoCreateForm(request.POST) 
         if form.is_valid():
             proyecto = form.save()
 
-            # ✅ Registrar acción
-            Actividad.objects.create(
-                usuario=request.user,
-                accion=f"Creó el proyecto '{proyecto.nombre}'."
-            )
+            # ✅ Registrar acción (si tienes el modelo Actividad)
+            # Actividad.objects.create(
+            #     usuario=request.user,
+            #     accion=f"Creó el proyecto '{proyecto.nombre}'."
+            # )
 
             return redirect('lista_proyectos')
     else:
-        form = ProyectoForm()
+        # Aquí también usamos el nuevo formulario de creación
+        form = ProyectoCreateForm() 
 
     return render(request, 'gestion/nuevo_proyecto.html', {'form': form})
 
@@ -108,7 +113,7 @@ def editar_proyecto(request, proyecto_id):
     proyecto = get_object_or_404(Proyecto, id=proyecto_id)
 
     if request.method == 'POST':
-        form = ProyectoForm(request.POST, instance=proyecto)
+        form = ProyectoUpdateForm(request.POST, instance=proyecto)
         if form.is_valid():
             form.save()
 
@@ -120,7 +125,7 @@ def editar_proyecto(request, proyecto_id):
 
             return redirect('lista_proyectos')
     else:
-        form = ProyectoForm(instance=proyecto)
+        form = ProyectoUpdateForm(instance=proyecto)
 
     return render(request, 'gestion/editar_proyecto.html', {'form': form, 'proyecto': proyecto})
 

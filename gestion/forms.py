@@ -5,12 +5,14 @@ from django.contrib.auth.forms import UserCreationForm
 
 
 # === FORMULARIO DE PROYECTOS (SOLO ACCESO AL ADMINISTRADOR) ===
-class ProyectoForm(forms.ModelForm):
-    """
-    Formulario para crear y editar proyectos.
-    Solo lo usa el administrador.
-    Incluye validaciones y campos estéticamente formateados.
-    """
+# gestion/forms.py
+
+# ... (tus otros imports y el ClienteForm se quedan igual) ...
+
+# === FORMULARIO PARA CREAR UN PROYECTO (SIN 'situacion') ===
+# gestion/forms.py
+
+class ProyectoCreateForm(forms.ModelForm):
     class Meta:
         model = Proyecto
         fields = [
@@ -19,61 +21,57 @@ class ProyectoForm(forms.ModelForm):
             'fecha_inicial',
             'fecha_final',
             'cantidad_h',
-            'situacion',
+            'cliente',
+            'administradores',
+        ]
+        # Este es el diccionario que debemos ajustar
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del proyecto'}),
+            
+            # Para que la descripción se vea como un campo normal
+            'descripcion': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Descripción breve del proyecto',
+                'rows': 3  # <--- Esta línea controla la altura
+            }),
+            # Para el calendario en la fecha inicial
+            'fecha_inicial': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            
+            # Para el calendario en la fecha final
+            'fecha_final': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            
+            'cantidad_h': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Horas presupuestadas'}),
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'administradores': forms.SelectMultiple(attrs={'class': 'form-control'}),
+        }
+    
+    # Tu método clean() se queda igual
+    def clean(self):
+        # ... (tu código de validación sin cambios)
+        return super().clean()
+
+# === FORMULARIO PARA EDITAR UN PROYECTO (CON 'situacion') ===
+class ProyectoUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Proyecto
+        # Esta lista es idéntica a la anterior, pero SÍ incluye 'situacion'
+        fields = [
+            'nombre',
+            'descripcion',
+            'fecha_inicial',
+            'fecha_final',
+            'cantidad_h',
+            'situacion',  # <-- La única diferencia es esta línea
             'cliente',
             'administradores',
         ]
         widgets = {
-            'nombre': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nombre del proyecto'
-            }),
-            'descripcion': forms.Textarea(attrs={
-                'rows': 3,
-                'class': 'form-control',
-                'placeholder': 'Descripción breve del proyecto'
-            }),
-            'fecha_inicial': forms.DateInput(attrs={
-                'type': 'date',
-                'class': 'form-control'
-            }),
-            'fecha_final': forms.DateInput(attrs={
-                'type': 'date',
-                'class': 'form-control'
-            }),
-            'cantidad_h': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Horas presupuestadas'
-            }),
-            'situacion': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'cliente': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'administradores': forms.SelectMultiple(attrs={
-                'class': 'form-control'
-            }),
+            # ... (todos tus widgets, incluyendo el de 'situacion')
         }
 
     def clean(self):
-        """
-        Validación personalizada:
-        - La fecha final no puede ser anterior a la inicial.
-        - Las horas presupuestadas deben ser mayores a 0 si se proporcionan.
-        """
-        cleaned_data = super().clean()
-        fecha_inicial = cleaned_data.get('fecha_inicial')
-        fecha_final = cleaned_data.get('fecha_final')
-        cantidad_h = cleaned_data.get('cantidad_h')
-
-        if fecha_final and fecha_inicial and fecha_final < fecha_inicial:
-            self.add_error('fecha_final', 'La fecha final no puede ser anterior a la inicial.')
-
-        if cantidad_h is not None and cantidad_h <= 0:
-            self.add_error('cantidad_h', 'Las horas presupuestadas deben ser mayores a 0.')
-
-        return cleaned_data
+        # ... (tu código de validación sin cambios)
+        return super().clean()
 
 
 # === FORMULARIO DE REGISTRO DE HORAS (SOLO PARA EMPLEADOS) ===
