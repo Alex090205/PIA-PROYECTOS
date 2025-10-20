@@ -1,23 +1,29 @@
 {% extends "gestion/base.html" %}
-{% block title %}Asignar proyecto{% endblock %}
+{% block title %}Asignar Proyecto{% endblock %}
 
 {% block content %}
-<h1>Asignar proyecto a {{ empleado.username }}</h1>
-<p>Selecciona el proyecto y el rol dentro del proyecto.</p>
+<h1>🧩 Asignar Proyecto a {{ empleado.username }}</h1>
+<p>Selecciona el proyecto y el rol que desempeñará el empleado dentro del mismo.</p>
 <hr>
 
-<form method="post" style="max-width: 480px;">
+<form method="post" class="form-asignar">
   {% csrf_token %}
-  <div style="margin-bottom:12px;">
-    <label>Proyecto</label>
+  
+  <div class="form-group">
+    <label for="{{ form.proyecto.id_for_label }}">Proyecto</label>
     {{ form.proyecto }}
   </div>
-  <div style="margin-bottom:12px;">
-    <label>Rol</label>
+
+  <div class="form-group">
+    <label for="{{ form.rol_en_proyecto.id_for_label }}">Rol en el Proyecto</label>
     {{ form.rol_en_proyecto }}
   </div>
 
-  <button type="submit" class="btn btn-success">Asignar</button>
-  <a href="{% url 'lista_empleados' %}" class="btn">Cancelar</a>
+  <div class="form-buttons">
+    <button type="submit" class="btn btn-success">Asignar</button>
+    <a href="{% url 'lista_empleados' %}" class="btn btn-secondary">Cancelar</a>
+  </div>
 </form>
+
+
 {% endblock %}

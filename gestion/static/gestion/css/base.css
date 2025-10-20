@@ -309,3 +309,55 @@ main.main-center {
 .volver-link:hover {
     text-decoration: underline;
 }
+
+
+
+/* === FORMULARIO DE ASIGNACIÓN DE PROYECTO === */
+.form-asignar {
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: var(--color-white);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.form-asignar label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 6px;
+}
+
+.form-asignar select,
+.form-asignar input,
+.form-asignar textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #dcdfe3;
+    border-radius: 8px;
+    background: #fafafa;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+}
+
+.form-asignar select:focus,
+.form-asignar input:focus,
+.form-asignar textarea:focus {
+    border-color: var(--color-primary);
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(127, 179, 213, 0.25);
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+/* Botones del formulario */
+.form-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+}
