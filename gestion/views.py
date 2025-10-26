@@ -5,12 +5,16 @@ from django.contrib.auth.decorators import login_required
 # from django.db.models import Sum
 #from django.contrib.auth.models import User
 from .models import Proyecto, RegistroHoras, Actividad, Cliente   
-from .forms import ProyectoCreateForm, ProyectoUpdateForm,  RegistroHorasForm, ClienteForm, EmpleadoForm
+from .forms import ProyectoCreateForm, ProyectoUpdateForm,  RegistroHorasForm, ClienteForm, EmpleadoForm, CustomPasswordChangeForm
 from django.utils import timezone
-from django.db.models import Sum, Prefetch
+from django.db.models import Sum, Prefetch , F
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import CustomPasswordChangeForm
 
 from .models import Proyecto, RegistroHoras, Actividad, AsignacionProyecto
 from .forms import ProyectoCreateForm, RegistroHorasForm, AsignarProyectoForm
@@ -161,7 +165,9 @@ def registrar_horas(request):
         return redirect('admin_home')
 
     if request.method == 'POST':
-        form = RegistroHorasForm(request.POST)
+        # 👇 *** AQUÍ: Pasamos el 'user' al formulario ***
+        form = RegistroHorasForm(request.POST, user=request.user)
+        
         if form.is_valid():
             registro = form.save(commit=False)
             registro.empleado = request.user
@@ -175,7 +181,8 @@ def registrar_horas(request):
 
             return redirect('mis_horas')
     else:
-        form = RegistroHorasForm()
+        # 👇 *** Y AQUÍ TAMBIÉN: Pasamos el 'user' al formulario vacío ***
+        form = RegistroHorasForm(user=request.user)
 
     return render(request, 'gestion/registrar_horas.html', {'form': form})
 
@@ -200,44 +207,73 @@ def ver_registros_horas_admin(request):
     if not request.user.is_staff:
         return redirect('empleado_home')
 
+    # ===== PASO 1: DEFINE 'registros' Y FILTROS =====
+    # Define la variable 'registros' aquí al principio
     registros = RegistroHoras.objects.select_related('empleado', 'proyecto')
 
-    # --- FILTROS OPCIONALES ---
+    # Obtiene los IDs de los filtros ANTES de calcular resúmenes
     empleado_id = request.GET.get('empleado')
     proyecto_id = request.GET.get('proyecto')
 
+    # Aplica los filtros a 'registros' si existen
     if empleado_id:
         registros = registros.filter(empleado_id=empleado_id)
     if proyecto_id:
         registros = registros.filter(proyecto_id=proyecto_id)
+    # ===============================================
 
-    # --- RESÚMENES ---
+    # ===== PASO 2: CALCULA RESÚMENES (usando 'registros') =====
     total_horas = registros.aggregate(total=Sum('horas'))['total'] or 0
     resumen_empleados = (
         registros.values('empleado__username')
         .annotate(total=Sum('horas'))
         .order_by('-total')
     )
-    resumen_proyectos = (
-        registros.values('proyecto__nombre')
-        .annotate(total=Sum('horas'))
-        .order_by('-total')
+    # ... (el resto del cálculo de resumen_proyectos_con_variacion que ya tienes) ...
+    proyectos_con_registros_ids = registros.values_list('proyecto_id', flat=True).distinct()
+    resumen_proyectos_qs = (
+        Proyecto.objects.filter(id__in=proyectos_con_registros_ids)
+        .annotate(
+            total_horas_registradas=Sum('registros_horas__horas'),
+            horas_presupuestadas_valor=F('cantidad_h')
+        )
+        .order_by('-total_horas_registradas')
     )
+    resumen_proyectos_con_variacion = []
+    for p in resumen_proyectos_qs:
+        variacion = None
+        presupuestado = p.horas_presupuestadas_valor
+        registrado = p.total_horas_registradas if p.total_horas_registradas is not None else 0
+        if presupuestado is not None:
+             try:
+                 variacion = float(registrado) - float(presupuestado)
+             except (ValueError, TypeError):
+                 variacion = None
+        resumen_proyectos_con_variacion.append({
+            'nombre': p.nombre,
+            'horas_presupuestadas_valor': presupuestado,
+            'total_horas_registradas': registrado,
+            'variacion': variacion
+        })
+    # ====================================================
 
-    # --- DATOS PARA SELECT DE FILTROS ---
+    # ===== PASO 3: OBTÉN DATOS PARA SELECTS =====
     empleados = User.objects.filter(is_staff=False)
     proyectos = Proyecto.objects.all()
+    # ===========================================
 
+    # ===== PASO 4: CREA EL CONTEXT =====
     context = {
-        'registros': registros,
+        'registros': registros, # Ahora 'registros' ya existe
         'empleados': empleados,
         'proyectos': proyectos,
         'total_horas': total_horas,
         'resumen_empleados': resumen_empleados,
-        'resumen_proyectos': resumen_proyectos,
-        'empleado_id': empleado_id,
-        'proyecto_id': proyecto_id,
+        'resumen_proyectos': resumen_proyectos_con_variacion,
+        'empleado_id': empleado_id, # 'empleado_id' también debe estar definido antes
+        'proyecto_id': proyecto_id, # 'proyecto_id' también debe estar definido antes
     }
+    # ===================================
 
     return render(request, 'gestion/registro_horas_admin.html', context)
 
@@ -427,3 +463,30 @@ def registrar_usuario(request):
         form = EmpleadoForm()
 
     return render(request, 'gestion/registrar_usuario.html', {'form': form})
+
+# === VISTA DE CAMBIO DE CONTRASEÑA (RECOMENDADA) ===
+class CambiarPasswordView(LoginRequiredMixin, PasswordChangeView):
+    """
+    Vista para que el usuario cambie su contraseña.
+    Usa la vista genérica de Django para máxima seguridad.
+    """
+    form_class = CustomPasswordChangeForm
+    template_name = 'gestion/cambiar_password.html' # El template que crearemos en el Paso 4
+    success_url = reverse_lazy('password_exitoso') # Una URL a dónde ir después (Paso 3)
+
+    def get_form_kwargs(self):
+        """
+        Esto es clave: le pasa el usuario actual al formulario.
+        """
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+# --- Vista simple para el éxito ---
+# También necesitarás una vista simple que muestre un mensaje de éxito.
+from django.shortcuts import render
+
+@login_required
+def password_exitoso(request):
+    """Muestra un mensaje de éxito después de cambiar la contraseña."""
+    return render(request, 'gestion/password_exitoso.html')

@@ -94,26 +94,46 @@
     -->
 
     <!-- ESTRUCTURA DEL RESUMEN POR PROYECTO -->
-    <h2 style="color: #2c3e50;"> Total de horas por proyecto</h2>
+ <h2 style="color: #2c3e50;"> Resumen por Proyecto</h2>
     {% if resumen_proyectos %}
         <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
             <thead style="background-color: #e9ecef;">
                 <tr>
                     <th>Proyecto</th>
-                    <th>Total de horas</th>
+                    <th>Horas Presupuestadas</th>
+                    <th>Horas Registradas</th>
+                    <th>Variación</th>
                 </tr>
             </thead>
             <tbody>
                 {% for p in resumen_proyectos %}
                 <tr>
-                    <td>{{ p.proyecto__nombre }}</td>
-                    <td>{{ p.total }}</td>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.horas_presupuestadas_valor|default:"N/A" }}</td>
+                    {# Usamos floatformat:0 para asegurar que se muestre como entero #}
+                    <td>{{ p.total_horas_registradas|default:0|floatformat:0 }}</td>
+                    <td>
+                        {% if p.variacion is not None %}
+                            {% if p.variacion > 0 %}
+                                {# floatformat:0 muestra el entero #}
+                                <span style="color: red;">+{{ p.variacion|floatformat:0 }}</span>
+                            {% elif p.variacion < 0 %}
+                                {# floatformat:0 muestra el entero #}
+                                <span style="color: green;">{{ p.variacion|floatformat:0 }}</span>
+                            {% else %}
+                                {# Muestra solo 0 #}
+                                <span>0</span>
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <p style="color: gray;">No hay datos de proyectos aún.</p>
+        <p style="color: gray;">No hay datos de proyectos con horas registradas aún.</p>
     {% endif %}
 
     <!--  TOTAL GENERAL -->
