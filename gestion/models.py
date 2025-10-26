@@ -53,13 +53,7 @@ class Proyecto(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     fecha_inicial = models.DateField()
     fecha_final = models.DateField(null=True, blank=True)
-    cantidad_h = models.DecimalField(
-        max_digits=7,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name="Horas Presupuestadas"
-    )
+    cantidad_h = models.IntegerField()
     situacion = models.CharField(max_length=3, choices=SITUACION_CHOICES, default='ACT')
 
     # Relación: un proyecto pertenece a un cliente
@@ -105,7 +99,7 @@ class RegistroHoras(models.Model):
         related_name='registros_horas'
     )
     fecha = models.DateField()
-    horas = models.DecimalField(max_digits=5, decimal_places=2)
+    horas = models.IntegerField()
     descripcion = models.TextField()
 
     def __str__(self):

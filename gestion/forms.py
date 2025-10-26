@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Proyecto, RegistroHoras, AsignacionProyecto, Cliente, PerfilEmpleado
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 
 
 # === FORMULARIO DE PROYECTOS (SOLO ACCESO AL ADMINISTRADOR) ===
@@ -81,6 +81,33 @@ class RegistroHorasForm(forms.ModelForm):
     en un proyecto activo.
     Incluye validaciones para evitar errores comunes.
     """
+
+    # === NUEVO MÉTODO __init__ ===
+    def __init__(self, *args, **kwargs):
+        # Extraemos el 'user' que le pasaremos desde la vista
+        user = kwargs.pop('user', None)
+        
+        # Llamamos al constructor original
+        super().__init__(*args, **kwargs)
+        
+        # Si el usuario existe (¡que debería!), filtramos el campo 'proyecto'
+        if user:
+            # Esta es la magia:
+            # Le decimos al campo 'proyecto' que su lista de opciones (queryset)
+            # sea SOLAMENTE los proyectos de la relación 'proyectos_como_empleado'
+            # que pertenecen a ese usuario.
+            self.fields['proyecto'].queryset = user.proyectos_como_empleado.all()
+
+            # --- MEJORA OPCIONAL (Recomendada) ---
+            # Basado en tu método clean(), podemos optimizar esto
+            # para que ni siquiera muestre proyectos finalizados o cancelados
+            # en el dropdown, haciendo la UI más limpia.
+            self.fields['proyecto'].queryset = user.proyectos_como_empleado.exclude(
+                situacion__in=['FIN', 'CAN']
+            )
+            # ------------------------------------
+
+    # === FIN DEL NUEVO MÉTODO ===
     class Meta:
         model = RegistroHoras
         fields = ['proyecto', 'fecha', 'horas', 'descripcion']
@@ -94,7 +121,7 @@ class RegistroHorasForm(forms.ModelForm):
             }),
             'horas': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ejemplo: 3.5'
+                'placeholder': 'Introduce solo números enteros'
             }),
             'descripcion': forms.Textarea(attrs={
                 'rows': 3,
@@ -134,6 +161,8 @@ class RegistroHorasForm(forms.ModelForm):
         if horas is not None and horas <= 0:
             raise forms.ValidationError('Las horas deben ser mayores a 0.')
         return horas
+    
+
 class AsignarProyectoForm(forms.ModelForm):
     """
     Form para asignar un proyecto a un empleado (evita duplicar asignaciones activas).
@@ -210,3 +239,23 @@ class EmpleadoForm(forms.ModelForm):
         if commit:
             perfil.save()
         return perfil
+    
+# === FORMULARIO DE CAMBIO DE CONTRASEÑA ===
+class CustomPasswordChangeForm(PasswordChangeForm):
+    """
+    Formulario para que un usuario cambie su propia contraseña.
+    Hereda de PasswordChangeForm y solo se personalizan los widgets
+    para que coincidan con el estilo (ej. Bootstrap).
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Añadimos la clase 'form-control' a todos los campos
+        self.fields['old_password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña actual'})
+        self.fields['new_password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Nueva contraseña'})
+        self.fields['new_password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirmar nueva contraseña'})
+        
+        # Opcional: Cambiar las etiquetas (labels) si quieres
+        self.fields['old_password'].label = "Contraseña actual"
+        self.fields['new_password1'].label = "Nueva contraseña"
+        self.fields['new_password2'].label = "Confirmación de nueva contraseña"

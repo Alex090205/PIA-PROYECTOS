@@ -2,12 +2,12 @@
 {% block title %}Registrar Horas{% endblock %}
 
 {% block content %}
-<h1 Registrar horas trabajadas</h1>
+<h1> Registrar horas trabajadas</h1>
 <p>Ingresa las horas que has trabajado en los proyectos asignados.</p>
 <hr>
 
 <form method="post" style="max-width: 600px; margin: auto;">
-    {% csrf_token %}
+    {% csrf_token %}s
     {{ form.as_p }}
     <button type="submit" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer;">
         Guardar registro
