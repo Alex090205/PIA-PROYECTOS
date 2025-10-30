@@ -259,3 +259,58 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         self.fields['old_password'].label = "Contraseña actual"
         self.fields['new_password1'].label = "Nueva contraseña"
         self.fields['new_password2'].label = "Confirmación de nueva contraseña"
+
+class ReporteFiltroForm(forms.Form):
+    """
+    Este formulario no guarda nada, solo captura las
+    opciones del usuario para filtrar el reporte.
+    """
+    
+    # Filtro 1: Por Cliente
+    # (Si filtras por Cliente, los proyectos se autolimitarán en la vista)
+    cliente = forms.ModelChoiceField(
+        queryset=Cliente.objects.all(),
+        required=False, # ¡Importante! Para permitir "Todos"
+        label="Cliente",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    # Filtro 2: Por Proyecto
+    proyecto = forms.ModelChoiceField(
+        queryset=Proyecto.objects.all(),
+        required=False,
+        label="Proyecto",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    # Filtro 3: Por Usuario (Empleado)
+    # Asumimos que los empleados son los que no son 'staff'
+    empleado = forms.ModelChoiceField(
+        queryset=User.objects.filter(is_staff=False),
+        required=False,
+        label="Empleado",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    # Filtro 4: Periodo de tiempo
+    fecha_inicio = forms.DateField(
+        required=False,
+        label="Desde",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    
+    fecha_fin = forms.DateField(
+        required=False,
+        label="Hasta",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Añadimos 'empty_label' para que la opción por defecto
+        diga "Todos" en lugar de "---------"
+        """
+        super().__init__(*args, **kwargs)
+        self.fields['cliente'].empty_label = "Todos los Clientes"
+        self.fields['proyecto'].empty_label = "Todos los Proyectos"
+        self.fields['empleado'].empty_label = "Todos los Empleados"
