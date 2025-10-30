@@ -36,6 +36,8 @@ urlpatterns = [
 
     path('registrar/usuario/', views.registrar_usuario, name='registrar_usuario'),
 
+    path('reportes/', views.reportes, name='reportes'),
+
 
 
 

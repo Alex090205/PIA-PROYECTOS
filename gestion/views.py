@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Proyecto, RegistroHoras, Actividad, Cliente   
 from .forms import ProyectoCreateForm, ProyectoUpdateForm,  RegistroHorasForm, ClienteForm, EmpleadoForm, CustomPasswordChangeForm
 from django.utils import timezone
-from django.db.models import Sum, Prefetch , F
+from django.db.models import Sum, Prefetch , F, Count
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CustomPasswordChangeForm
+from .forms import ReporteFiltroForm
 
 from .models import Proyecto, RegistroHoras, Actividad, AsignacionProyecto
 from .forms import ProyectoCreateForm, RegistroHorasForm, AsignarProyectoForm
@@ -305,12 +306,109 @@ def registrar_usuario(request):
     return render(request, 'gestion/registrar_usuario.html') #, context)
 
 def reportes(request):
-    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
-    # clientes = Cliente.objects.all()
-    # context = {'clientes': clientes}
+    """
+    Muestra el formulario de filtros y TRES reportes:
+    1. Resumen por Proyecto (Agregado)
+    2. Resumen por Empleado (Agregado)
+    3. Bitácora de Horas (Detalle)
+    """
+    
+    # 1. Obtenemos la base de todos los registros
+    base_query = RegistroHoras.objects.select_related(
+        'proyecto', 
+        'empleado', 
+        'proyecto__cliente'
+    )
+    
+    # 2. Instanciamos el formulario (igual que antes)
+    form = ReporteFiltroForm(request.GET)
+    
+    # 3. Aplicamos los filtros (igual que antes)
+    if form.is_valid():
+        cleaned_data = form.cleaned_data
+        
+        if cleaned_data.get('cliente'):
+            base_query = base_query.filter(proyecto__cliente=cleaned_data.get('cliente'))
+            
+        if cleaned_data.get('proyecto'):
+            base_query = base_query.filter(proyecto=cleaned_data.get('proyecto'))
+            
+        if cleaned_data.get('empleado'):
+            base_query = base_query.filter(empleado=cleaned_data.get('empleado'))
+            
+        if cleaned_data.get('fecha_inicio'):
+            base_query = base_query.filter(fecha__gte=cleaned_data.get('fecha_inicio'))
+            
+        if cleaned_data.get('fecha_fin'):
+            base_query = base_query.filter(fecha__lte=cleaned_data.get('fecha_fin'))
 
-    # Por ahora, solo le decimos que muestre el archivo HTML
-    return render(request, 'gestion/reportes.html') #, context)
+    reporte_bitacora = base_query.order_by('-fecha')
+
+    # 4. GENERAR REPORTE POR PROYECTO
+    reporte_proyectos_query = reporte_bitacora.values(
+        'proyecto__id',
+        'proyecto__nombre',
+        'proyecto__cliente__nombre',
+        'proyecto__cantidad_h'
+    ).annotate(
+        horas_registradas_filtradas=Sum('horas')
+    ).order_by('-horas_registradas_filtradas')
+
+    reporte_proyectos = []
+    for p in reporte_proyectos_query:
+        presupuestadas = p['proyecto__cantidad_h']
+        registradas = p['horas_registradas_filtradas']
+        
+        # --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+        # Si 'Sum' no encuentra registros, devuelve None.
+        # Debemos convertir None a 0 antes de calcular.
+        if registradas is None:
+            registradas = 0
+        # --- FIN DE LA CORRECCIÓN ---
+            
+        if presupuestadas > 0:
+            progreso = (registradas / presupuestadas) * 100
+            horas_restantes = presupuestadas - registradas
+        else:
+            progreso = 0
+            horas_restantes = 0
+            
+        p['progreso'] = round(progreso, 2)
+        p['horas_restantes'] = horas_restantes
+        reporte_proyectos.append(p)
+
+
+    # 5. GENERAR REPORTE POR EMPLEADO
+    reporte_empleados = reporte_bitacora.values(
+        'empleado__id',
+        'empleado__first_name',
+        'empleado__last_name',
+        'empleado__username'
+    ).annotate(
+        # --- ¡CORRECCIÓN AQUÍ TAMBIÉN! ---
+        # Es buena práctica verificar 'None' también en las sumas de empleados.
+        horas_totales=Sum('horas'),
+        num_registros=Count('id')
+    ).order_by('-horas_totales')
+    
+    # Procesamos los empleados para convertir 'None' en 0 si es necesario
+    reporte_empleados_procesado = []
+    for e in reporte_empleados:
+        if e['horas_totales'] is None:
+            e['horas_totales'] = 0
+        reporte_empleados_procesado.append(e)
+
+
+    # 6. Preparamos el contexto para el template
+    contexto = {
+        'form': form,
+        'reporte_bitacora': reporte_bitacora,
+        'reporte_proyectos': reporte_proyectos,
+        # Pasamos la lista procesada
+        'reporte_empleados': reporte_empleados_procesado, 
+    }
+    
+    return render(request, 'gestion/reportes.html', contexto)
 
 def empleados(request):
     # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
