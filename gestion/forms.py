@@ -151,6 +151,22 @@ class RegistroHorasForm(forms.ModelForm):
         if fecha and fecha > date.today():
             self.add_error('fecha', 'No puedes registrar horas en fechas futuras.')
 
+        if proyecto and fecha:
+            
+            
+            if fecha < proyecto.fecha_inicial:
+                
+                self.add_error('fecha', 
+                    f"La fecha ({fecha.strftime('%d/%m/%Y')}) no puede ser anterior al inicio del proyecto "
+                    f"({proyecto.fecha_inicial.strftime('%d/%m/%Y')})."
+                )
+            
+            if proyecto.fecha_final and fecha > proyecto.fecha_final:
+                self.add_error('fecha',
+                    f"La fecha ({fecha.strftime('%d/%m/%Y')}) no puede ser posterior a la finalización del proyecto "
+                    f"({proyecto.fecha_final.strftime('%d/%m/%Y')})."
+                )
+        
         return cleaned_data
 
     def clean_horas(self):
