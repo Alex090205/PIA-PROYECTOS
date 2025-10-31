@@ -16,9 +16,16 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CustomPasswordChangeForm
 from .forms import ReporteFiltroForm
-
+import openpyxl
+import datetime
+from openpyxl.styles import Font
 from .models import Proyecto, RegistroHoras, Actividad, AsignacionProyecto
 from .forms import ProyectoCreateForm, RegistroHorasForm, AsignarProyectoForm
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa  # Importamos PISA, que es el motor de xhtml2pdf
+from io import BytesIO
 
 
 # === LOGIN ===
@@ -305,25 +312,25 @@ def registrar_usuario(request):
     # Por ahora, solo le decimos que muestre el archivo HTML
     return render(request, 'gestion/registrar_usuario.html') #, context)
 
+@login_required 
 def reportes(request):
     """
-    Muestra el formulario de filtros y TRES reportes:
-    1. Resumen por Proyecto (Agregado)
-    2. Resumen por Empleado (Agregado)
-    3. Bitácora de Horas (Detalle)
+    Muestra los 3 reportes,
+    O EXPORTA A EXCEL (3 hojas)
+    O EXPORTA A PDF (1 documento con 3 tablas)
     """
     
-    # 1. Obtenemos la base de todos los registros
+    # 1. Obtenemos la base de todos los registros (sin cambios)
     base_query = RegistroHoras.objects.select_related(
         'proyecto', 
         'empleado', 
         'proyecto__cliente'
     )
     
-    # 2. Instanciamos el formulario (igual que antes)
+    # 2. Instanciamos el formulario (sin cambios)
     form = ReporteFiltroForm(request.GET)
     
-    # 3. Aplicamos los filtros (igual que antes)
+    # 3. Aplicamos los filtros (sin cambios)
     if form.is_valid():
         cleaned_data = form.cleaned_data
         
@@ -342,9 +349,10 @@ def reportes(request):
         if cleaned_data.get('fecha_fin'):
             base_query = base_query.filter(fecha__lte=cleaned_data.get('fecha_fin'))
 
+    # Esta es nuestra lista principal de bitácora
     reporte_bitacora = base_query.order_by('-fecha')
 
-    # 4. GENERAR REPORTE POR PROYECTO
+    # 4. GENERAR REPORTE POR PROYECTO (sin cambios)
     reporte_proyectos_query = reporte_bitacora.values(
         'proyecto__id',
         'proyecto__nombre',
@@ -359,63 +367,140 @@ def reportes(request):
         presupuestadas = p['proyecto__cantidad_h']
         registradas = p['horas_registradas_filtradas']
         
-        # --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-        # Si 'Sum' no encuentra registros, devuelve None.
-        # Debemos convertir None a 0 antes de calcular.
         if registradas is None:
             registradas = 0
-        # --- FIN DE LA CORRECCIÓN ---
             
-        if presupuestadas > 0:
+        if presupuestadas is not None and presupuestadas > 0:
             progreso = (registradas / presupuestadas) * 100
             horas_restantes = presupuestadas - registradas
         else:
             progreso = 0
-            horas_restantes = 0
+            horas_restantes = -registradas 
             
         p['progreso'] = round(progreso, 2)
         p['horas_restantes'] = horas_restantes
         reporte_proyectos.append(p)
 
 
-    # 5. GENERAR REPORTE POR EMPLEADO
+    # 5. GENERAR REPORTE POR EMPLEADO (sin cambios)
     reporte_empleados = reporte_bitacora.values(
         'empleado__id',
         'empleado__first_name',
         'empleado__last_name',
         'empleado__username'
     ).annotate(
-        # --- ¡CORRECCIÓN AQUÍ TAMBIÉN! ---
-        # Es buena práctica verificar 'None' también en las sumas de empleados.
         horas_totales=Sum('horas'),
         num_registros=Count('id')
     ).order_by('-horas_totales')
     
-    # Procesamos los empleados para convertir 'None' en 0 si es necesario
     reporte_empleados_procesado = []
     for e in reporte_empleados:
         if e['horas_totales'] is None:
             e['horas_totales'] = 0
         reporte_empleados_procesado.append(e)
 
-
-    # 6. Preparamos el contexto para el template
+    # 6. Preparamos el contexto (sin cambios)
     contexto = {
         'form': form,
         'reporte_bitacora': reporte_bitacora,
         'reporte_proyectos': reporte_proyectos,
-        # Pasamos la lista procesada
         'reporte_empleados': reporte_empleados_procesado, 
     }
+
+    # 
+    # =======================================
+    # === ¡LÓGICA DE EXPORTACIÓN (EXCEL Y PDF)! ===
+    # =======================================
     
+    export_type = request.GET.get('exportar')
+
+    # --- Opción 1: Exportar a EXCEL (Sin cambios) ---
+    if export_type == 'excel':
+        
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+        filename = f"reporte_completo_{datetime.date.today()}.xlsx"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        wb = openpyxl.Workbook()
+        bold_font = Font(bold=True)
+        
+        # Hoja 1: Resumen Proyectos
+        ws1 = wb.active
+        ws1.title = "Resumen Proyectos"
+        headers1 = [
+            "Proyecto", "Cliente", "H. Presupuestadas", 
+            "H. Registradas", "H. Restantes", "Consumo (%)"
+        ]
+        ws1.append(headers1)
+        for cell in ws1[1]: cell.font = bold_font
+        for p in reporte_proyectos:
+            ws1.append([
+                p['proyecto__nombre'], p['proyecto__cliente__nombre'],
+                p['proyecto__cantidad_h'], p['horas_registradas_filtradas'],
+                p['horas_restantes'], p['progreso']
+            ])
+
+        # Hoja 2: Resumen Empleados
+        ws2 = wb.create_sheet(title="Resumen Empleados")
+        headers2 = ["Empleado", "Horas Totales", "N° de Registros"]
+        ws2.append(headers2)
+        for cell in ws2[1]: cell.font = bold_font
+        for e in reporte_empleados_procesado:
+            full_name = f"{e['empleado__first_name']} {e['empleado__last_name']}"
+            ws2.append([
+                full_name.strip() or e['empleado__username'],
+                e['horas_totales'], e['num_registros']
+            ])
+
+        # Hoja 3: Bitácora Detalle
+        ws3 = wb.create_sheet(title="Bitacora Detalle")
+        headers3 = ["Fecha", "Empleado", "Proyecto", "Cliente", "Horas", "Descripción"]
+        ws3.append(headers3)
+        for cell in ws3[1]: cell.font = bold_font
+        for registro in reporte_bitacora:
+            ws3.append([
+                registro.fecha, registro.empleado.get_full_name() or registro.empleado.username,
+                registro.proyecto.nombre, registro.proyecto.cliente.nombre,
+                registro.horas, registro.descripcion
+            ])
+
+        wb.save(response)
+        return response
+
+    # --- Opción 2: Exportar a PDF (¡ACTUALIZADO CON xhtml2pdf!) ---
+    elif export_type == 'pdf':
+        
+    
+        html_string = render_to_string('gestion/reporte_pdf.html', contexto)
+
+    
+        result = BytesIO()
+        
+    
+        pdf = pisa.pisaDocument(BytesIO(html_string.encode("UTF-8")), result)
+        
+       
+        if not pdf.err:
+         
+            response = HttpResponse(result.getvalue(), content_type='application/pdf')
+            filename = f"reporte_completo_{datetime.date.today()}.pdf"
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+        
+      
+        return HttpResponse(f"Error al generar el PDF: {pdf.err}", status=500)
+
+    
+    # --- Opción 3: Mostrar la página HTML normal ---
+    # Si no se presionó ningún botón de 'exportar', renderizamos la página.
     return render(request, 'gestion/reportes.html', contexto)
 
 def empleados(request):
-    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
-    # clientes = Cliente.objects.all()
-    # context = {'clientes': clientes}
 
-    # Por ahora, solo le decimos que muestre el archivo HTML
+
+  
     return render(request, 'gestion/empleados.html') #, context)
 
 

@@ -45,7 +45,17 @@
                     <a href="{% url 'reportes' %}" class="btn btn-secondary">Limpiar</a>
                 </div>
 
-            </form>
+                <div class="">
+                    <button type="submit" name="exportar" value="excel" class="btn btn-success">
+                         Exportar Reporte (Excel)
+                    </button>
+                </div>
+                <div class="">
+                    <button type="submit" name="exportar" value="pdf" class="btn btn-danger">
+                         Exportar Reporte (PDF)
+                    </button>
+                </div>
+                </form>
         </div>
     </div>
     
@@ -63,7 +73,7 @@
                             <th>H. Presupuestadas</th>
                             <th>H. Registradas</th>
                             <th>H. Restantes</th>
-                            <th>Progreso</th>
+                            <th>Consumo</th>
                         </tr>
                     </thead>
                     <tbody>
