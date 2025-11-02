@@ -3,7 +3,7 @@
 {% block title %}Lista de Clientes{% endblock %}
 
 {% block content %}
-    <h1>🏢 Lista de Clientes</h1>
+    <h1>Lista de Clientes</h1>
     <p>Consulta los clientes registrados en el sistema.</p>
     <hr>
 
@@ -17,6 +17,7 @@
                     <th>Dirección</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,6 +29,10 @@
                         <td>{{ cliente.direccion|default:"-" }}</td>
                         <td>{{ cliente.correo|default:"-" }}</td>
                         <td>{{ cliente.telefono|default:"-" }}</td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" href="{% url 'editar_cliente' cliente.id %}">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" href="{% url 'eliminar_cliente' cliente.id %}">Eliminar</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -36,7 +41,8 @@
         <p style="color: gray; text-align: center;">No hay clientes registrados aún.</p>
     {% endif %}
 
-    <div style="margin-top: 20px;">
-        <a href="{% url 'admin_home' %}" style="text-decoration: none;">← Volver al panel de administrador</a>
+    <div class="mt-3">
+        <a href="{% url 'admin_home' %}" class="btn btn-secondary">Volver al panel de administrador</a>
     </div>
 {% endblock %}
+

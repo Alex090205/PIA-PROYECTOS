@@ -11,9 +11,11 @@
     <form method="post" class="form-simple">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn-enviar">Guardar proyecto</button>
+        <button type="submit" class="btn btn-primary">Guardar proyecto</button>
     </form>
 
-    <a href="{% url 'admin_home' %}" class="volver-link">← Volver al panel de administrador</a>
+    <a href="{% url 'admin_home' %}" class="btn btn-secondary mt-2">← Volver al panel de administrador</a>
 </div>
 {% endblock %}
+
+

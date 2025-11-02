@@ -1,13 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 
 # === PERFIL DE USUARIO ===
 class Perfil(models.Model):
     """
     Extiende el modelo User para definir roles (Administrador o Empleado)
-    y opcionalmente un puesto o área.
+    y opcionalmente un puesto o area.
     """
     TIPO_CHOICES = [
         ('Administrador', 'Administrador'),
@@ -28,19 +30,48 @@ class Cliente(models.Model):
     Representa a los clientes relacionados con los proyectos.
     """
     nombre = models.CharField(max_length=200)
-    rfc = models.CharField(max_length=13, unique=True)
+    rfc = models.CharField(
+        max_length=13,
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[A-Z&]{3,4}\d{6}[A-Z0-9]{3}$',
+                message='RFC invalido. Debe cumplir el formato oficial (12 o 13 caracteres).',
+                code='invalid_rfc',
+            )
+        ],
+    )
     direccion = models.TextField(blank=True, null=True)
     correo = models.EmailField(max_length=100, blank=True)
-    telefono = models.CharField(max_length=20, blank=True)
+    telefono = models.CharField(
+        max_length=20,
+        blank=True,
+        validators=[RegexValidator(regex=r'^\d{10}$', message='El telefono debe tener 10 digitos.', code='invalid_phone')],
+    )
 
     def __str__(self):
         return self.nombre
+
+    def clean(self):
+        super().clean()
+        rfc_norm = (self.rfc or '').strip().upper()
+        if rfc_norm:
+            qs = Cliente.objects.filter(rfc__iexact=rfc_norm)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            if qs.exists():
+                raise ValidationError({'rfc': 'Ya existe un cliente con ese RFC.'})
+
+    def save(self, *args, **kwargs):
+        if self.rfc is not None:
+            self.rfc = self.rfc.strip().upper()
+        super().save(*args, **kwargs)
 
 
 # === PROYECTO ===
 class Proyecto(models.Model):
     """
-    Define los proyectos de la empresa y su relación con clientes y administradores.
+    Define los proyectos de la empresa y su relacion con clientes y administradores.
     """
     SITUACION_CHOICES = [
         ('ACT', 'Activo'),
@@ -48,7 +79,7 @@ class Proyecto(models.Model):
         ('FIN', 'Finalizado'),
         ('CAN', 'Cancelado'),
     ]
-    
+
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True, null=True)
     fecha_inicial = models.DateField()
@@ -56,14 +87,14 @@ class Proyecto(models.Model):
     cantidad_h = models.IntegerField()
     situacion = models.CharField(max_length=3, choices=SITUACION_CHOICES, default='ACT')
 
-    # Relación: un proyecto pertenece a un cliente
+    # Relacion: un proyecto pertenece a un cliente
     cliente = models.ForeignKey(
         Cliente,
         on_delete=models.CASCADE,
         related_name='proyectos'
     )
 
-    # Relación: varios administradores pueden supervisar un proyecto
+    # Relacion: varios administradores pueden supervisar un proyecto
     administradores = models.ManyToManyField(
         User,
         limit_choices_to={'is_staff': True},
@@ -90,7 +121,7 @@ class RegistroHoras(models.Model):
     empleado = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        limit_choices_to={'is_staff': False},  # Solo usuarios que NO son staff
+        limit_choices_to={'is_staff': False},
         related_name='registros_horas'
     )
     proyecto = models.ForeignKey(
@@ -106,11 +137,10 @@ class RegistroHoras(models.Model):
         return f"{self.empleado.username} - {self.horas}h en {self.proyecto.nombre}"
 
 
-# === ACTIVIDAD (BITÁCORA DE ACCIONES) FALTA DEFINIR FUNCION===
+# === ACTIVIDAD (BITACORA DE ACCIONES) ===
 class Actividad(models.Model):
     """
-    Registra acciones realizadas en el sistema (alta, edición, eliminación, etc.)
-    para fines de auditoría o seguimiento administrativo.
+    Registra acciones realizadas en el sistema (alta, edicion, eliminacion, etc.).
     """
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     accion = models.CharField(max_length=255)
@@ -120,12 +150,10 @@ class Actividad(models.Model):
         return f"{self.usuario.username} - {self.accion} ({self.fecha.strftime('%d/%m/%Y %H:%M')})"
 
 
-
-# ...tus modelos existentes arriba (Perfil, Cliente, Proyecto, RegistroHoras, Actividad)
-
+# === ASIGNACION DE PROYECTO A EMPLEADO ===
 class AsignacionProyecto(models.Model):
     """
-    Relación Empleado <-> Proyecto con metadatos (rol, activo, fechas).
+    Relacion Empleado <-> Proyecto con metadatos (rol, activo, fechas).
     """
     ROL_CHOICES = [
         ('DEV', 'Desarrollador'),
@@ -165,16 +193,11 @@ class AsignacionProyecto(models.Model):
 
 
 class PerfilEmpleado(models.Model):
-    # Enlace uno-a-uno con el modelo User de Django
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    # Campos de nombre personalizados
     primer_nombre = models.CharField(max_length=150)
-    segundo_nombre = models.CharField(max_length=150, blank=True) # blank=True lo hace opcional
+    segundo_nombre = models.CharField(max_length=150, blank=True)
     primer_apellido = models.CharField(max_length=150)
     segundo_apellido = models.CharField(max_length=150)
-
-    # Aquí es un buen lugar para añadir otros campos como 'puesto' o 'costo_por_hora' en el futuro
 
     def __str__(self):
         return f"{self.primer_nombre} {self.primer_apellido}"

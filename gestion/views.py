@@ -2,45 +2,44 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-# from django.db.models import Sum
-#from django.contrib.auth.models import User
-from .models import Proyecto, RegistroHoras, Actividad, Cliente   
-from .forms import ProyectoCreateForm, ProyectoUpdateForm,  RegistroHorasForm, ClienteForm, EmpleadoForm, CustomPasswordChangeForm
-from django.utils import timezone
-from django.db.models import Sum, Prefetch , F, Count
-from django.contrib.auth.models import User
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CustomPasswordChangeForm
-from .forms import ReporteFiltroForm
-import openpyxl
-import datetime
-from openpyxl.styles import Font
-from .models import Proyecto, RegistroHoras, Actividad, AsignacionProyecto
-from .forms import ProyectoCreateForm, RegistroHorasForm, AsignarProyectoForm
+from django.contrib.auth.models import User
+from django.utils import timezone
+from django.db.models import Sum, Prefetch, F, Count
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from django.template.loader import render_to_string
-from xhtml2pdf import pisa  # Importamos PISA, que es el motor de xhtml2pdf
 from io import BytesIO
+import datetime
+import openpyxl
+from openpyxl.styles import Font
+from xhtml2pdf import pisa
+
+from .models import (
+    Proyecto, RegistroHoras, Actividad, Cliente,
+    AsignacionProyecto, PerfilEmpleado,
+)
+from .forms import (
+    ProyectoCreateForm, ProyectoUpdateForm, RegistroHorasForm,
+    ClienteForm, EmpleadoForm, EmpleadoUpdateForm,
+    CustomPasswordChangeForm, ReporteFiltroForm, AsignarProyectoForm,
+)
 
 
 # === LOGIN ===
 def login_view(request):
-    """Vista para iniciar sesión."""
+    """Vista para iniciar sesiÃƒÂ³n."""
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
 
-            # ✅ Registrar acción en la bitácora
+            # Ã¢Å“â€¦ Registrar acciÃƒÂ³n en la bitÃƒÂ¡cora
             Actividad.objects.create(
                 usuario=user,
-                accion=f"Inició sesión en el sistema."
+                accion=f"IniciÃƒÂ³ sesiÃƒÂ³n en el sistema."
             )
 
             return redirect('admin_home' if user.is_staff else 'empleado_home')
@@ -52,11 +51,11 @@ def login_view(request):
 # === LOGOUT ===
 @login_required
 def logout_view(request):
-    """Cierra sesión y redirige al login."""
-    # ✅ Registrar acción en la bitácora
+    """Cierra sesiÃƒÂ³n y redirige al login."""
+    # Ã¢Å“â€¦ Registrar acciÃƒÂ³n en la bitÃƒÂ¡cora
     Actividad.objects.create(
         usuario=request.user,
-        accion=f"Cerró sesión."
+        accion=f"CerrÃƒÂ³ sesiÃƒÂ³n."
     )
 
     logout(request)
@@ -77,7 +76,7 @@ def empleado_home(request):
     return render(request, 'gestion/empleado_home.html')
 
 
-# === GESTIÓN DE PROYECTOS (ADMIN) ===
+# === GESTIÃƒâ€œN DE PROYECTOS (ADMIN) ===
 @login_required
 def lista_proyectos(request):
     """Muestra todos los proyectos (solo admin)."""
@@ -87,7 +86,7 @@ def lista_proyectos(request):
     return render(request, 'gestion/proyectos.html', {'proyectos': proyectos})
 
 
-# Asegúrate de que esta línea esté al principio de tu archivo, junto a los otros imports
+# AsegÃƒÂºrate de que esta lÃƒÂ­nea estÃƒÂ© al principio de tu archivo, junto a los otros imports
  
 
 @login_required
@@ -97,20 +96,20 @@ def nuevo_proyecto(request):
         return redirect('empleado_home')
 
     if request.method == 'POST':
-        # Aquí usamos el nuevo formulario de creación
+        # AquÃƒÂ­ usamos el nuevo formulario de creaciÃƒÂ³n
         form = ProyectoCreateForm(request.POST) 
         if form.is_valid():
             proyecto = form.save()
 
-            # ✅ Registrar acción (si tienes el modelo Actividad)
+            # Ã¢Å“â€¦ Registrar acciÃƒÂ³n (si tienes el modelo Actividad)
             # Actividad.objects.create(
             #     usuario=request.user,
-            #     accion=f"Creó el proyecto '{proyecto.nombre}'."
+            #     accion=f"CreÃƒÂ³ el proyecto '{proyecto.nombre}'."
             # )
 
             return redirect('lista_proyectos')
     else:
-        # Aquí también usamos el nuevo formulario de creación
+        # AquÃƒÂ­ tambiÃƒÂ©n usamos el nuevo formulario de creaciÃƒÂ³n
         form = ProyectoCreateForm() 
 
     return render(request, 'gestion/nuevo_proyecto.html', {'form': form})
@@ -127,12 +126,13 @@ def editar_proyecto(request, proyecto_id):
     if request.method == 'POST':
         form = ProyectoUpdateForm(request.POST, instance=proyecto)
         if form.is_valid():
-            form.save()
+            cliente = form.save()
+            Actividad.objects.create(usuario=request.user, accion="Registro el cliente '" + cliente.nombre + "'. ")
 
-            # ✅ Registrar acción
+            # Ã¢Å“â€¦ Registrar acciÃƒÂ³n
             Actividad.objects.create(
                 usuario=request.user,
-                accion=f"Editó el proyecto '{proyecto.nombre}'."
+                accion=f"EditÃƒÂ³ el proyecto '{proyecto.nombre}'."
             )
 
             return redirect('lista_proyectos')
@@ -154,10 +154,10 @@ def eliminar_proyecto(request, proyecto_id):
         nombre = proyecto.nombre
         proyecto.delete()
 
-        # ✅ Registrar acción
+        # Ã¢Å“â€¦ Registrar acciÃƒÂ³n
         Actividad.objects.create(
             usuario=request.user,
-            accion=f"Eliminó el proyecto '{nombre}'."
+            accion=f"EliminÃƒÂ³ el proyecto '{nombre}'."
         )
 
         return redirect('lista_proyectos')
@@ -173,7 +173,7 @@ def registrar_horas(request):
         return redirect('admin_home')
 
     if request.method == 'POST':
-        # 👇 *** AQUÍ: Pasamos el 'user' al formulario ***
+        # Ã°Å¸â€˜â€¡ *** AQUÃƒÂ: Pasamos el 'user' al formulario ***
         form = RegistroHorasForm(request.POST, user=request.user)
         
         if form.is_valid():
@@ -181,15 +181,15 @@ def registrar_horas(request):
             registro.empleado = request.user
             registro.save()
 
-            # ✅ Registrar acción
+            # Ã¢Å“â€¦ Registrar acciÃƒÂ³n
             Actividad.objects.create(
                 usuario=request.user,
-                accion=f"Registró {registro.horas} horas en el proyecto '{registro.proyecto.nombre}'."
+                accion=f"RegistrÃƒÂ³ {registro.horas} horas en el proyecto '{registro.proyecto.nombre}'."
             )
 
             return redirect('mis_horas')
     else:
-        # 👇 *** Y AQUÍ TAMBIÉN: Pasamos el 'user' al formulario vacío ***
+        # Ã°Å¸â€˜â€¡ *** Y AQUÃƒÂ TAMBIÃƒâ€°N: Pasamos el 'user' al formulario vacÃƒÂ­o ***
         form = RegistroHorasForm(user=request.user)
 
     return render(request, 'gestion/registrar_horas.html', {'form': form})
@@ -209,17 +209,17 @@ def mis_horas(request):
 @login_required
 def ver_registros_horas_admin(request):
     """
-    Muestra todos los registros de horas con filtros y resúmenes.
+    Muestra todos los registros de horas con filtros y resÃƒÂºmenes.
     Solo accesible para administradores.
     """
     if not request.user.is_staff:
         return redirect('empleado_home')
 
     # ===== PASO 1: DEFINE 'registros' Y FILTROS =====
-    # Define la variable 'registros' aquí al principio
+    # Define la variable 'registros' aquÃƒÂ­ al principio
     registros = RegistroHoras.objects.select_related('empleado', 'proyecto')
 
-    # Obtiene los IDs de los filtros ANTES de calcular resúmenes
+    # Obtiene los IDs de los filtros ANTES de calcular resÃƒÂºmenes
     empleado_id = request.GET.get('empleado')
     proyecto_id = request.GET.get('proyecto')
 
@@ -230,14 +230,14 @@ def ver_registros_horas_admin(request):
         registros = registros.filter(proyecto_id=proyecto_id)
     # ===============================================
 
-    # ===== PASO 2: CALCULA RESÚMENES (usando 'registros') =====
+    # ===== PASO 2: CALCULA RESÃƒÅ¡MENES (usando 'registros') =====
     total_horas = registros.aggregate(total=Sum('horas'))['total'] or 0
     resumen_empleados = (
         registros.values('empleado__username')
         .annotate(total=Sum('horas'))
         .order_by('-total')
     )
-    # ... (el resto del cálculo de resumen_proyectos_con_variacion que ya tienes) ...
+    # ... (el resto del cÃƒÂ¡lculo de resumen_proyectos_con_variacion que ya tienes) ...
     proyectos_con_registros_ids = registros.values_list('proyecto_id', flat=True).distinct()
     resumen_proyectos_qs = (
         Proyecto.objects.filter(id__in=proyectos_con_registros_ids)
@@ -265,7 +265,7 @@ def ver_registros_horas_admin(request):
         })
     # ====================================================
 
-    # ===== PASO 3: OBTÉN DATOS PARA SELECTS =====
+    # ===== PASO 3: OBTÃƒâ€°N DATOS PARA SELECTS =====
     empleados = User.objects.filter(is_staff=False)
     proyectos = Proyecto.objects.all()
     # ===========================================
@@ -278,41 +278,43 @@ def ver_registros_horas_admin(request):
         'total_horas': total_horas,
         'resumen_empleados': resumen_empleados,
         'resumen_proyectos': resumen_proyectos_con_variacion,
-        'empleado_id': empleado_id, # 'empleado_id' también debe estar definido antes
-        'proyecto_id': proyecto_id, # 'proyecto_id' también debe estar definido antes
+        'empleado_id': empleado_id, # 'empleado_id' tambiÃƒÂ©n debe estar definido antes
+        'proyecto_id': proyecto_id, # 'proyecto_id' tambiÃƒÂ©n debe estar definido antes
     }
     # ===================================
 
     return render(request, 'gestion/registro_horas_admin.html', context)
 
 
-# === ADMINISTRADOR: VER BITÁCORA DE ACTIVIDADES FALTA RELACIONAR EL URLS Y DEFINIR LA BITACORA===
+# === ADMINISTRADOR: VER BITÃƒÂCORA DE ACTIVIDADES FALTA RELACIONAR EL URLS Y DEFINIR LA BITACORA===
 @login_required
 def ver_actividades(request):
-    """Muestra la bitácora de acciones registradas (solo admin)."""
+    """Muestra la bitÃƒÂ¡cora de acciones registradas (solo admin)."""
     if not request.user.is_staff:
         return redirect('empleado_home')
 
     actividades = Actividad.objects.select_related('usuario').order_by('-fecha')[:100]
     return render(request, 'gestion/actividades.html', {'actividades': actividades})
 
-#def registrar_cliente(request):
-    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
-    # clientes = Cliente.objects.all()
-    # context = {'clientes': clientes}
+#
+def registrar_cliente(request):
+    """
+    Vista para crear un nuevo cliente.
+    Solo accesible para administradores.
+    """
+    if not request.user.is_staff:
+        return redirect('home')
 
-    # Por ahora, solo le decimos que muestre el archivo HTML
-   # return render(request, 'gestion/registrar_cliente.html') #, context)
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            cliente = form.save()
+            Actividad.objects.create(usuario=request.user, accion=f"Registro el cliente '{cliente.nombre}'.")
+            return redirect('admin_home')
+    else:
+        form = ClienteForm()
 
-def registrar_usuario(request):
-    # Más adelante, aquí podrías obtener la lista de clientes desde la base de datos
-    # clientes = Cliente.objects.all()
-    # context = {'clientes': clientes}
-
-    # Por ahora, solo le decimos que muestre el archivo HTML
-    return render(request, 'gestion/registrar_usuario.html') #, context)
-
-@login_required 
+    return render(request, 'gestion/registrar_cliente.html', {'form': form})@login_required 
 def reportes(request):
     """
     Muestra los 3 reportes,
@@ -349,7 +351,7 @@ def reportes(request):
         if cleaned_data.get('fecha_fin'):
             base_query = base_query.filter(fecha__lte=cleaned_data.get('fecha_fin'))
 
-    # Esta es nuestra lista principal de bitácora
+    # Esta es nuestra lista principal de bitÃƒÂ¡cora
     reporte_bitacora = base_query.order_by('-fecha')
 
     # 4. GENERAR REPORTE POR PROYECTO (sin cambios)
@@ -409,12 +411,12 @@ def reportes(request):
 
     # 
     # =======================================
-    # === ¡LÓGICA DE EXPORTACIÓN (EXCEL Y PDF)! ===
+    # === Ã‚Â¡LÃƒâ€œGICA DE EXPORTACIÃƒâ€œN (EXCEL Y PDF)! ===
     # =======================================
     
     export_type = request.GET.get('exportar')
 
-    # --- Opción 1: Exportar a EXCEL (Sin cambios) ---
+    # --- OpciÃƒÂ³n 1: Exportar a EXCEL (Sin cambios) ---
     if export_type == 'excel':
         
         response = HttpResponse(
@@ -444,7 +446,7 @@ def reportes(request):
 
         # Hoja 2: Resumen Empleados
         ws2 = wb.create_sheet(title="Resumen Empleados")
-        headers2 = ["Empleado", "Horas Totales", "N° de Registros"]
+        headers2 = ["Empleado", "Horas Totales", "NÃ‚Â° de Registros"]
         ws2.append(headers2)
         for cell in ws2[1]: cell.font = bold_font
         for e in reporte_empleados_procesado:
@@ -454,9 +456,9 @@ def reportes(request):
                 e['horas_totales'], e['num_registros']
             ])
 
-        # Hoja 3: Bitácora Detalle
+        # Hoja 3: BitÃƒÂ¡cora Detalle
         ws3 = wb.create_sheet(title="Bitacora Detalle")
-        headers3 = ["Fecha", "Empleado", "Proyecto", "Cliente", "Horas", "Descripción"]
+        headers3 = ["Fecha", "Empleado", "Proyecto", "Cliente", "Horas", "DescripciÃƒÂ³n"]
         ws3.append(headers3)
         for cell in ws3[1]: cell.font = bold_font
         for registro in reporte_bitacora:
@@ -469,7 +471,7 @@ def reportes(request):
         wb.save(response)
         return response
 
-    # --- Opción 2: Exportar a PDF (¡ACTUALIZADO CON xhtml2pdf!) ---
+    # --- OpciÃƒÂ³n 2: Exportar a PDF (Ã‚Â¡ACTUALIZADO CON xhtml2pdf!) ---
     elif export_type == 'pdf':
         
     
@@ -493,8 +495,8 @@ def reportes(request):
         return HttpResponse(f"Error al generar el PDF: {pdf.err}", status=500)
 
     
-    # --- Opción 3: Mostrar la página HTML normal ---
-    # Si no se presionó ningún botón de 'exportar', renderizamos la página.
+    # --- OpciÃƒÂ³n 3: Mostrar la pÃƒÂ¡gina HTML normal ---
+    # Si no se presionÃƒÂ³ ningÃƒÂºn botÃƒÂ³n de 'exportar', renderizamos la pÃƒÂ¡gina.
     return render(request, 'gestion/reportes.html', contexto)
 
 def empleados(request):
@@ -529,7 +531,7 @@ def lista_empleados(request):
     return render(request, 'gestion/empleados.html', {'empleados': empleados})
 
 
-# === GESTIÓN DE CLIENTES (ADMIN) ===
+# === GESTIÃƒâ€œN DE CLIENTES (ADMIN) ===
 @login_required
 def lista_clientes(request):
     if not request.user.is_staff:
@@ -542,6 +544,43 @@ def lista_clientes(request):
     }
 
     return render(request, 'gestion/lista_clientes.html', context)
+
+
+@login_required
+def editar_cliente(request, cliente_id):
+    if not request.user.is_staff:
+        return redirect('empleado_home')
+
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+        if form.is_valid():
+            form.save()
+            Actividad.objects.create(
+                usuario=request.user,
+                accion=f"EditÃƒÂ³ el cliente '{cliente.nombre}'."
+            )
+            return redirect('lista_clientes')
+    else:
+        form = ClienteForm(instance=cliente)
+    return render(request, 'gestion/editar_cliente.html', {'form': form, 'cliente': cliente})
+
+
+@login_required
+def eliminar_cliente(request, cliente_id):
+    if not request.user.is_staff:
+        return redirect('empleado_home')
+
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    if request.method == 'POST':
+        nombre = cliente.nombre
+        cliente.delete()
+        Actividad.objects.create(
+            usuario=request.user,
+            accion=f"EliminÃƒÂ³ el cliente '{nombre}'."
+        )
+        return redirect('lista_clientes')
+    return render(request, 'gestion/eliminar_cliente.html', {'cliente': cliente})
 
 
 # --- ASIGNAR PROYECTO A EMPLEADO ---
@@ -563,7 +602,7 @@ def asignar_proyecto_empleado(request, empleado_id):
 
             Actividad.objects.create(
                 usuario=request.user,
-                accion=f"Asignó el proyecto '{asig.proyecto.nombre}' a {empleado.username} (rol: {asig.get_rol_en_proyecto_display()})."
+                accion=f"AsignÃƒÂ³ el proyecto '{asig.proyecto.nombre}' a {empleado.username} (rol: {asig.get_rol_en_proyecto_display()})."
             )
 
             return redirect('lista_empleados')
@@ -597,12 +636,12 @@ def desasignar_proyecto_empleado(request, empleado_id, proyecto_id):
 
         Actividad.objects.create(
             usuario=request.user,
-            accion=f"Desasignó el proyecto '{asignacion.proyecto.nombre}' de {empleado.username}."
+            accion=f"DesasignÃƒÂ³ el proyecto '{asignacion.proyecto.nombre}' de {empleado.username}."
         )
 
         return redirect('lista_empleados')
 
-    # Confirmación simple
+    # ConfirmaciÃƒÂ³n simple
     return render(request, 'gestion/confirmar_desasignacion.html', {
         'empleado': empleado,
         'proyecto': asignacion.proyecto
@@ -622,7 +661,8 @@ def registrar_cliente(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
         if form.is_valid():
-            form.save() 
+            cliente = form.save() 
+            Actividad.objects.create(usuario=request.user, accion="Registro el cliente '" + cliente.nombre + "'.")
             return redirect('admin_home') 
     else:
         
@@ -647,15 +687,64 @@ def registrar_usuario(request):
 
     return render(request, 'gestion/registrar_usuario.html', {'form': form})
 
-# === VISTA DE CAMBIO DE CONTRASEÑA (RECOMENDADA) ===
+
+@login_required
+def editar_usuario(request, usuario_id):
+    # Solo los administradores pueden editar empleados
+    if not request.user.is_staff:
+        return redirect('home')
+
+    empleado = get_object_or_404(User, id=usuario_id, is_staff=False)
+    perfil = get_object_or_404(PerfilEmpleado, user=empleado)
+
+    if request.method == 'POST':
+        form = EmpleadoUpdateForm(request.POST, instance=perfil, user_instance=empleado)
+        if form.is_valid():
+            form.save()
+            Actividad.objects.create(
+                usuario=request.user,
+                accion=f"EditÃƒÂ³ al usuario '{empleado.username}'."
+            )
+            return redirect('lista_empleados')
+    else:
+        form = EmpleadoUpdateForm(instance=perfil, user_instance=empleado)
+
+    return render(request, 'gestion/editar_usuario.html', {'form': form, 'empleado': empleado})
+
+
+@login_required
+def eliminar_usuario(request, usuario_id):
+    # Solo los administradores pueden eliminar (desactivar) empleados
+    if not request.user.is_staff:
+        return redirect('home')
+
+    empleado = get_object_or_404(User, id=usuario_id, is_staff=False)
+
+    if request.method == 'POST':
+        # Desactivar usuario y dar de baja asignaciones activas
+        empleado.is_active = False
+        empleado.save()
+        AsignacionProyecto.objects.filter(empleado=empleado, activo=True).update(
+            activo=False,
+            fecha_baja=timezone.now().date()
+        )
+        Actividad.objects.create(
+            usuario=request.user,
+            accion=f"DesactivÃƒÂ³ al usuario '{empleado.username}'."
+        )
+        return redirect('lista_empleados')
+
+    return render(request, 'gestion/eliminar_usuario.html', {'empleado': empleado})
+
+# === VISTA DE CAMBIO DE CONTRASEÃƒâ€˜A (RECOMENDADA) ===
 class CambiarPasswordView(LoginRequiredMixin, PasswordChangeView):
     """
-    Vista para que el usuario cambie su contraseña.
-    Usa la vista genérica de Django para máxima seguridad.
+    Vista para que el usuario cambie su contraseÃƒÂ±a.
+    Usa la vista genÃƒÂ©rica de Django para mÃƒÂ¡xima seguridad.
     """
     form_class = CustomPasswordChangeForm
     template_name = 'gestion/cambiar_password.html' # El template que crearemos en el Paso 4
-    success_url = reverse_lazy('password_exitoso') # Una URL a dónde ir después (Paso 3)
+    success_url = reverse_lazy('password_exitoso') # Una URL a dÃƒÂ³nde ir despuÃƒÂ©s (Paso 3)
 
     def get_form_kwargs(self):
         """
@@ -665,11 +754,13 @@ class CambiarPasswordView(LoginRequiredMixin, PasswordChangeView):
         kwargs['user'] = self.request.user
         return kwargs
 
-# --- Vista simple para el éxito ---
-# También necesitarás una vista simple que muestre un mensaje de éxito.
+# --- Vista simple para el ÃƒÂ©xito ---
+# TambiÃƒÂ©n necesitarÃƒÂ¡s una vista simple que muestre un mensaje de ÃƒÂ©xito.
 from django.shortcuts import render
 
 @login_required
 def password_exitoso(request):
-    """Muestra un mensaje de éxito después de cambiar la contraseña."""
+    """Muestra un mensaje de ÃƒÂ©xito despuÃƒÂ©s de cambiar la contraseÃƒÂ±a."""
     return render(request, 'gestion/password_exitoso.html')
+
+
