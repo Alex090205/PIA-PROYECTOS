@@ -163,6 +163,15 @@ main.main-center {
     text-align: center;
     width: 270px;
     transition: transform 0.25s, box-shadow 0.25s;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.admin-card .card-content-wrapper {
+    /* 3. (LA MAGIA) Le dice al contenido que "crezca" 
+       y ocupe todo el espacio vertical disponible. */
+    flex-grow: 1;
 }
 
 .admin-card:hover {

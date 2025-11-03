@@ -31,7 +31,7 @@
                         <td>{{ cliente.telefono|default:"-" }}</td>
                         <td>
                             <a class="btn btn-sm btn-primary" href="{% url 'editar_cliente' cliente.id %}">Editar</a>
-                            <a class="btn btn-sm btn-outline-danger" href="{% url 'eliminar_cliente' cliente.id %}">Eliminar</a>
+                            <a class="btn btn-sm btn-danger" href="{% url 'eliminar_cliente' cliente.id %}">Eliminar</a>
                         </td>
                     </tr>
                 {% endfor %}

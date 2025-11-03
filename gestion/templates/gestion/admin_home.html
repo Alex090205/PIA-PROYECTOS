@@ -16,72 +16,79 @@
     <h2 class="section-title">Opciones de administración</h2>
 
     <div class="dashboard-grid">
-        <!--RECUADRO PARA VER LOS PROYECTOS -->
+        
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/proyecto.svg' %}" alt="Proyectos" class="card-icon">
-            <h3>Ver proyectos</h3>
-            <p>Consulta todos los proyectos existentes y sus detalles.</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/proyecto.svg' %}" alt="Proyectos" class="card-icon">
+                <h3>Ver proyectos</h3>
+                <p>Consulta todos los proyectos existentes y sus detalles.</p>
+            </div>
             <a href="{% url 'lista_proyectos' %}" class="btn btn-primary">Ver lista</a>
         </div>
 
-        <!-- RECUADRO PARA CREAR NUEVO PROYECTO -->
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
-            <h3>Crear proyecto</h3>
-            <p>Agrega nuevos proyectos al sistema y asígnalos a clientes y responsables.</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/Ver.svg' %}" alt="Nuevo proyecto" class="card-icon">
+                <h3>Crear proyecto</h3>
+                <p>Agrega nuevos proyectos al sistema y asígnalos a clientes y responsables.</p>
+            </div>
             <a href="{% url 'nuevo_proyecto' %}" class="btn btn-success">Crear nuevo</a>
         </div>
 
-        <!-- RECUADRO PARA VER REGISTROS DE HORAS -->
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/hora.svg' %}" alt="Registros de horas" class="card-icon">
-            <h3>Registros de horas</h3>
-            <p>Revisa las horas registradas por los empleados en cada proyecto.</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/hora.svg' %}" alt="Registros de horas" class="card-icon">
+                <h3>Registros de horas</h3>
+                <p>Revisa las horas registradas por los empleados en cada proyecto.</p>
+            </div>
             <a href="{% url 'ver_registros_horas_admin' %}" class="btn btn-info">Ver registros</a>
         </div>
 
-        <!-- RECUADRO PARA REGISTRAR CLIENTES -->
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/cliente.svg' %}" alt="Nuevo proyecto" class="card-icon">
-            <h3>Registrar Nuevo Cliente</h3>
-            <p>Registra un nuevo cliente al sistema.</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/cliente.svg' %}" alt="Nuevo proyecto" class="card-icon">
+                <h3>Registrar Nuevo Cliente</h3>
+                <p>Registra un nuevo cliente al sistema.</p>
+            </div>
             <a href="{% url 'registrar_cliente' %}" class="btn btn-success">Registrar nuevo</a>
         </div>
 
-        <!-- RECUADRO PARA REGISTRAR USUARIOS -->
-
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/usuario.svg' %}" alt="Nuevo proyecto" class="card-icon">
-            <h3>Registrar Nuevo Usuario</h3>
-            <p>Registra Nuevos Usuarios</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/usuario.svg' %}" alt="Nuevo proyecto" class="card-icon">
+                <h3>Registrar Nuevo Usuario</h3>
+                <p>Registra Nuevos Usuarios</p>
+            </div>
             <a href="{% url 'registrar_usuario' %}" class="btn btn-success">Registrar nuevo</a>
         </div>
 
-        <!-- RECUADRO PARA VER REPORTES -->
-
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/reportes.svg' %}" alt="Nuevo proyecto" class="card-icon">
-            <h3>Reportes</h3>
-            <p>Consulta los Reportes</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/reportes.svg' %}" alt="Nuevo proyecto" class="card-icon">
+                <h3>Reportes</h3>
+                <p>Consulta los Reportes</p>
+            </div>
             <a href="{% url 'reportes' %}" class="btn btn-info">Consultar reportes</a>
         </div>
 
-        <!-- RECUADRO PARA VER EMPLEADOS -->
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/usuarios.svg' %}" alt="Nuevo proyecto" class="card-icon">
-            <h3>Ver usuarios</h3>
-            <p>Consulta todos los Empleados registrados en el sistema</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/usuarios.svg' %}" alt="Nuevo proyecto" class="card-icon">
+                <h3>Ver usuarios</h3>
+                <p>Consulta todos los Empleados registrados en el sistema</p>
+            </div>
             <a href="{% url 'lista_empleados' %}" class="btn btn-primary">Ver empleados</a>
-
-            
         </div>
 
         <div class="admin-card">
-            <img src="{% static 'gestion/img/icons/clientes.svg' %}" alt="Clientes" class="card-icon">
-            <h3>Ver clientes</h3>
-            <p>Consulta todos los Clientes registrados en el sistema.</p>
+            <div class="card-content-wrapper">
+                <img src="{% static 'gestion/img/icons/clientes.svg' %}" alt="Clientes" class="card-icon">
+                <h3>Ver clientes</h3>
+                <p>Consulta todos los Clientes registrados en el sistema.</á>
+            </div>
             <a href="{% url 'lista_clientes' %}" class="btn btn-primary">Ver clientes</a>
         </div>
+        
     </div>
 </div>
 {% endblock %}

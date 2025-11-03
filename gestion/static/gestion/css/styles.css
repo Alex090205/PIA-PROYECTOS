@@ -275,3 +275,12 @@ form textarea:focus {
     }
 }
 
+.btn-xs {
+    /* Usamos !important para asegurarnos de que estas reglas
+     le ganen a las de .btn-sm de Bootstrap.
+    */
+    padding: .15rem .4rem !important;  /* Menos relleno (más delgado y angosto) */
+    font-size: .75rem !important;     /* Letra más pequeña */
+    border-radius: .2rem !important;   /* Bordes un poco más pequeños */
+}
+

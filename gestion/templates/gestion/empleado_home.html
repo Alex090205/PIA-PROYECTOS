@@ -4,56 +4,53 @@
 {% block title %}Panel del Empleado{% endblock %}
 
 {% block content %}
-<a class="nav-link" href="{% url 'cambiar_password' %}">Cambiar Contraseña</a>
-<div style="display: flex; justify-content: center; align-items: center; height: 85vh; font-family: 'Segoe UI', Tahoma, sans-serif;">
+
+<div class="container-fluid py-3 text-end">
+    <a class="btn btn-sm btn-secondary" href="{% url 'cambiar_password' %}">
+        
+        Cambiar Contraseña
+    </a>
+</div>
+
+<div style="display: flex; justify-content: center; align-items: start; min-height: 70vh; font-family: 'Segoe UI', Tahoma, sans-serif;">
     <div style="max-width: 700px; width: 90%; text-align: center; background-color: #f8f9fa; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 
-        <!-- Imagen SVG representativa del empleado -->
         <img src="{% static 'gestion/img/icons/empleado.svg' %}" 
              alt="Panel del Empleado" 
              style="width: 100px; height: 100px; margin-bottom: 15px;">
 
-        <!-- Encabezado -->
         <h1 style="color: #2c3e50; margin-bottom: 10px;">Panel del Empleado</h1>
         <p style="color: #555;">Bienvenido, <strong>{{ user.username }}</strong>. Gestiona tus registros de horas fácilmente.</p>
 
         <hr style="margin: 20px 0;">
 
-        <!--  Botones de acción -->
         <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
 
-            <!-- Registrar horas -->
             <a href="{% url 'registrar_horas' %}"
-            style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-            background-color: #7FB3D5; color: white; padding: 15px 25px; border-radius: 8px;
-            text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s;">
+               style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+               background-color: #7FB3D5; color: white; padding: 15px 25px; border-radius: 8px;
+               text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s;">
 
-
-            <img src="{% static 'gestion/img/icons/tiempo.svg' %}" 
-            alt="Registrar Horas" 
-            style="width: 22px; height: 22px; filter: brightness(0) invert(1);">
-
-            Registrar Horas
+                <img src="{% static 'gestion/img/icons/tiempo.svg' %}" 
+                     alt="Registrar Horas" 
+                     style="width: 22px; height: 22px; filter: brightness(0) invert(1);">
+                
+                Registrar Horas
             </a>
 
-
-            <!-- Ver horas registradas -->
             <a href="{% url 'mis_horas' %}"
-            style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-                    background-color: #A3C9A8; color: white; padding: 15px 25px; border-radius: 8px;
-                    text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s;">
+               style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+                      background-color: #A3C9A8; color: white; padding: 15px 25px; border-radius: 8px;
+                      text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s;">
 
-            <img src="{% static 'gestion/img/icons/consulta_time.svg' %}" 
-                    alt="Ver Mis Horas" 
-                    style="width: 22px; height: 22px; filter: brightness(0) invert(1);">
+                <img src="{% static 'gestion/img/icons/consulta_time.svg' %}" 
+                     alt="Ver Mis Horas" 
+                     style="width: 22px; height: 22px; filter: brightness(0) invert(1);">
 
-
-            Ver Mis Horas
+                Ver Mis Horas
             </a>
-
         </div>
 
-        <!-- Efectos hover -->
         <style>
             a:hover {
                 opacity: 0.9;

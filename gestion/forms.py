@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
@@ -205,14 +207,21 @@ class EmpleadoUpdateForm(forms.ModelForm):
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):
+    """
+    Formulario para que un usuario cambie su propia contraseña.
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['old_password'].widget.attrs.update({'class': 'form-control'})
-        self.fields['new_password1'].widget.attrs.update({'class': 'form-control'})
-        self.fields['new_password2'].widget.attrs.update({'class': 'form-control'})
-        self.fields['old_password'].label = 'Contrasena actual'
-        self.fields['new_password1'].label = 'Nueva contrasena'
-        self.fields['new_password2'].label = 'Confirmacion de nueva contrasena'
+        
+        # Estilos (esto ya lo tenías)
+        self.fields['old_password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña actual'})
+        self.fields['new_password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Nueva contraseña'})
+        self.fields['new_password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirmar nueva contraseña'})
+        
+        # Etiquetas (labels) con 'ñ' (tu cambio, que es correcto)
+        self.fields['old_password'].label = 'Contraseña actual'
+        self.fields['new_password1'].label = 'Nueva contraseña'
+        self.fields['new_password2'].label = 'Confirmación de nueva contraseña'
 
 
 class ReporteFiltroForm(forms.Form):
