@@ -184,7 +184,7 @@ class EmpleadoUpdateForm(forms.ModelForm):
         model = PerfilEmpleado
         fields = ['primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user_instance=None, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and getattr(self.instance, 'user', None):
             u = self.instance.user
