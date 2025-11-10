@@ -227,7 +227,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 class ReporteFiltroForm(forms.Form):
     cliente = forms.ModelChoiceField(queryset=Cliente.objects.all(), required=False, label='Cliente', widget=forms.Select(attrs={'class': 'form-control'}))
     proyecto = forms.ModelChoiceField(queryset=Proyecto.objects.all(), required=False, label='Proyecto', widget=forms.Select(attrs={'class': 'form-control'}))
-    empleado = forms.ModelChoiceField(queryset=User.objects.filter(is_staff=False), required=False, label='Empleado', widget=forms.Select(attrs={'class': 'form-control'}))
+    empleado = forms.ModelChoiceField(queryset=User.objects.filter(is_staff=False, is_active=True), required=False, label='Empleado', widget=forms.Select(attrs={'class': 'form-control'}))
     fecha_inicio = forms.DateField(required=False, label='Desde', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
     fecha_fin = forms.DateField(required=False, label='Hasta', widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
 

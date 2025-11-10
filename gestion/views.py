@@ -266,7 +266,7 @@ def ver_registros_horas_admin(request):
     # ====================================================
 
     # ===== PASO 3: OBTÃƒâ€°N DATOS PARA SELECTS =====
-    empleados = User.objects.filter(is_staff=False)
+    empleados = User.objects.filter(is_staff=False, is_active=True)
     proyectos = Proyecto.objects.all()
     # ===========================================
 
