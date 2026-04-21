@@ -522,7 +522,8 @@ def lista_empleados(request):
             ),
             Prefetch(
                 'asignaciones',
-                queryset=AsignacionProyecto.objects.select_related('proyecto').order_by('-activo', 'proyecto__nombre')
+                queryset=AsignacionProyecto.objects.filter(activo=True).select_related('proyecto').order_by('proyecto__nombre')
+                
             )
         )
         .order_by('username')
