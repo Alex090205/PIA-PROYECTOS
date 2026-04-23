@@ -63,8 +63,9 @@ class RegistroHorasForm(forms.ModelForm):
         fecha = cleaned.get('fecha')
         if proyecto and proyecto.situacion in ['PAU', 'FIN', 'CAN']:
             raise forms.ValidationError('No puedes registrar horas en un proyecto no activo.')
-        from datetime import date
-        if fecha and fecha > date.today():
+        from django.utils import timezone
+        hoy = timezone.localdate()
+        if fecha and fecha > hoy:
             self.add_error('fecha', 'No puedes registrar horas en fechas futuras.')
         if proyecto and fecha:
             if fecha < proyecto.fecha_inicial:
