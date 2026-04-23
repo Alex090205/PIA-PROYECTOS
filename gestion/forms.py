@@ -70,9 +70,7 @@ class RegistroHorasForm(forms.ModelForm):
             if fecha < proyecto.fecha_inicial:
                 inicio_str = proyecto.fecha_inicial.strftime('%d/%m/%Y')
                 self.add_error('fecha', f'La fecha no puede ser anterior al inicio del proyecto ({inicio_str}).')
-            if proyecto.fecha_final and fecha > proyecto.fecha_final:
-                fin_str = proyecto.fecha_final.strftime('%d/%m/%Y')
-                self.add_error('fecha', f'La fecha no puede ser posterior a la finalizacion del proyecto ({fin_str}).')
+
             if hasattr(self, 'user') and self.user:
                 if not AsignacionProyecto.objects.filter(empleado=self.user, proyecto=proyecto, activo=True).exists():
                     self.add_error('proyecto', 'No tienes asignacion activa a este proyecto.')
