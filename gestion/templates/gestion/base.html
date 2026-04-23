@@ -57,6 +57,15 @@
             </div>
         </div>
     </div>
+
+    <script>
+    // Prevenir que la rueda del ratón cambie los valores en los inputs de tipo número
+        document.addEventListener("wheel", function(event) {
+        if (document.activeElement.type === "number") {
+            document.activeElement.blur();
+        }
+    });
+    </script>
     </body>
 </html>
 
