@@ -61,7 +61,7 @@ class RegistroHorasForm(forms.ModelForm):
         cleaned = super().clean()
         proyecto = cleaned.get('proyecto')
         fecha = cleaned.get('fecha')
-        if proyecto and proyecto.situacion in ['FIN', 'CAN']:
+        if proyecto and proyecto.situacion in ['PAU', 'FIN', 'CAN']:
             raise forms.ValidationError('No puedes registrar horas en un proyecto no activo.')
         from datetime import date
         if fecha and fecha > date.today():
