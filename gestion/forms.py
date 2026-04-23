@@ -100,7 +100,14 @@ class AsignarProyectoForm(forms.ModelForm):
 
             qs = qs.exclude(id__in=proyectos_asignados)
 
-        self.fields['proyecto'].queryset = qs.order_by('nombre')
+        self.fields['proyecto'].queryset = qs.order_by('nombre').distinct()
+
+    class Meta:
+        model = AsignacionProyecto   # 🔥 ESTO ES LO QUE FALTA / SE ROMPIÓ
+        fields = ['proyecto']
+        widgets = {
+            'proyecto': forms.Select(attrs={'class': 'form-control'}),
+        }
 
 # === CLIENTE ===
 class ClienteForm(forms.ModelForm):
