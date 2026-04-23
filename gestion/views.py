@@ -446,7 +446,7 @@ def reportes(request):
 
         # Hoja 2: Resumen Empleados
         ws2 = wb.create_sheet(title="Resumen Empleados")
-        headers2 = ["Empleado", "Horas Totales", "NÃ‚Â° de Registros"]
+        headers2 = ["Empleado", "Horas Totales", "Numero de Registros"]
         ws2.append(headers2)
         for cell in ws2[1]: cell.font = bold_font
         for e in reporte_empleados_procesado:
@@ -458,7 +458,7 @@ def reportes(request):
 
         # Hoja 3: BitÃƒÂ¡cora Detalle
         ws3 = wb.create_sheet(title="Bitacora Detalle")
-        headers3 = ["Fecha", "Empleado", "Proyecto", "Cliente", "Horas", "DescripciÃƒÂ³n"]
+        headers3 = ["Fecha", "Empleado", "Proyecto", "Cliente", "Horas", "Descripcion"]
         ws3.append(headers3)
         for cell in ws3[1]: cell.font = bold_font
         for registro in reporte_bitacora:
