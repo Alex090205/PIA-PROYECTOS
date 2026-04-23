@@ -89,18 +89,18 @@ class AsignarProyectoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         empleado = kwargs.pop('empleado', None)
         super().__init__(*args, **kwargs)
+
         qs = Proyecto.objects.all()
+
         if empleado is not None:
-            qs = qs.exclude(asignaciones__empleado=empleado, asignaciones__activo=True)
+            proyectos_asignados = AsignacionProyecto.objects.filter(
+                empleado=empleado,
+                activo=True
+            ).values_list('proyecto_id', flat=True)
+
+            qs = qs.exclude(id__in=proyectos_asignados)
+
         self.fields['proyecto'].queryset = qs.order_by('nombre')
-
-    class Meta:
-        model = AsignacionProyecto
-        fields = ['proyecto']
-        widgets = {
-            'proyecto': forms.Select(attrs={'class': 'form-control'}),
-        }
-
 
 # === CLIENTE ===
 class ClienteForm(forms.ModelForm):
