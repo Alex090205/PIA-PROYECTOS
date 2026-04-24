@@ -29,6 +29,12 @@ class ProyectoCreateForm(forms.ModelForm):
             self.add_error('fecha_inicial', 'La fecha inicial no puede ser posterior a la fecha final.')
             self.add_error('fecha_final', 'La fecha final no puede ser anterior a la fecha inicial.')
         return cleaned
+    
+    def clean_cantidad_h(self):
+        cantidad_h = self.cleaned_data.get('cantidad_h')
+        if cantidad_h is not None and cantidad_h <= 0:
+            raise forms.ValidationError('Las horas deben ser mayores a 0.')
+        return cantidad_h
 
 
 class ProyectoUpdateForm(ProyectoCreateForm):
