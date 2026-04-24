@@ -89,7 +89,7 @@ class AsignarProyectoForm(forms.ModelForm):
         empleado = kwargs.pop('empleado', None)
         super().__init__(*args, **kwargs)
 
-        qs = Proyecto.objects.all()
+        qs = Proyecto.objects.filter(situacion='ACT')
 
         if empleado is not None:
             proyectos_asignados = AsignacionProyecto.objects.filter(
