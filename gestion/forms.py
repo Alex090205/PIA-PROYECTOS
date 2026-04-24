@@ -44,7 +44,7 @@ class RegistroHorasForm(forms.ModelForm):
         if user:
             self.user = user
             qs = Proyecto.objects.filter(asignaciones__empleado=user, asignaciones__activo=True)
-            qs = qs.exclude(situacion__in=['FIN', 'CAN']).distinct()
+            qs = qs.exclude(situacion__in=['FIN', 'CAN', 'PAU']).distinct()
             self.fields['proyecto'].queryset = qs
 
     class Meta:
