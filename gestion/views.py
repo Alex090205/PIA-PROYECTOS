@@ -82,7 +82,7 @@ def lista_proyectos(request):
     """Muestra todos los proyectos (solo admin)."""
     if not request.user.is_staff:
         return redirect('empleado_home')
-    proyectos = Proyecto.objects.select_related('cliente').all()
+    proyectos = Proyecto.objects.select_related('cliente').all().order_by('id')
     return render(request, 'gestion/proyectos.html', {'proyectos': proyectos})
 
 
