@@ -143,7 +143,7 @@ class Actividad(models.Model):
     Registra acciones realizadas en el sistema (alta, edicion, eliminacion, etc.).
     """
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    accion = models.CharField(max_length=255)
+    accion = models.TextField()
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
